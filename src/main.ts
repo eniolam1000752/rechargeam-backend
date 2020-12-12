@@ -8,6 +8,6 @@ async function bootstrap() {
   app.useLogger(app.get(appLogger));
   (global as typeof global & { app: any }).app = app;
 
-  await app.listen(process.env.NODE_ENV !== 'production' ? 3500 : 9000);
+  await app.listen(process.env.NODE_ENV !== 'production' ? 3500 : proces);
 }
 bootstrap();
