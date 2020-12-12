@@ -1,6 +1,6 @@
 const metaDataKey = Symbol();
 
-export const useMiddleware = (...arg: Array<string>) => (
+export const UseMiddleware = (...arg: Array<string>) => (
   target,
   propertyValue,
   props: PropertyDescriptor,
@@ -9,10 +9,10 @@ export const useMiddleware = (...arg: Array<string>) => (
   const middlewares = arg.map((item) => funcObj[item]);
   const temp = props.value;
 
-  props.value = function (req, resp) {
+  props.value = async function (req, resp) {
     for (let index in middlewares) {
       try {
-        middlewares[index].apply(this, [
+        await middlewares[index].apply(this, [
           req,
           resp,
           () => {
@@ -21,10 +21,11 @@ export const useMiddleware = (...arg: Array<string>) => (
         ]);
       } catch (exp) {
         console.log(exp);
+        if (!/exited/g.test(exp)) throw exp;
       }
     }
     try {
-      temp.apply(this, [
+      await temp.apply(this, [
         req,
         resp,
         () => {
@@ -33,6 +34,7 @@ export const useMiddleware = (...arg: Array<string>) => (
       ]);
     } catch (exp) {
       console.log(exp);
+      if (!/exited/g.test(exp)) throw exp;
     }
   };
 };

@@ -6,3 +6,6 @@ export class appLogger extends Logger {
     super.error(msg, trace);
   }
 }
+
+@Injectable()
+export class EmailSender {}

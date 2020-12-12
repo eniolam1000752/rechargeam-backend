@@ -1,9 +1,10 @@
-import { Post } from '@nestjs/common';
-import { Res } from '@nestjs/common';
-import { Controller, Get } from '@nestjs/common';
-import { Response } from 'express';
+import { Post, Res, Req, Controller, Get } from '@nestjs/common';
+import {} from '@nestjs/common';
+import { Request, Response } from 'express';
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
+import { Middleware } from './lib/decorators/middleware';
+import { UserService } from './users/users.service';
 
 class LoginResponseDTO {
   username: string;
@@ -11,11 +12,19 @@ class LoginResponseDTO {
 
 @Controller('/api')
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor() {}
 
-  @Get()
-  getHello(): string {
-    // console.log(this.authService.loginList);
-    return this.appService.getHello();
+  @Middleware
+  protected() {}
+
+  @Get('/health')
+  health(@Req() req: Request, @Res() resp: Response) {
+    resp.json({
+      status: 'server is up',
+      routes: (global as any).app
+        .getHttpServer()
+        ._events.request._router.stack.map((item) => item.route?.path)
+        .filter((item) => item),
+    });
   }
 }
