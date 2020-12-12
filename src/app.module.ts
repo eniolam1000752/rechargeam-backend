@@ -40,8 +40,8 @@ const dbConfig: TypeOrmModuleOptions =
         username: process.env.DB_USERNAME,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
-        entities: [],
-        synchronize: true,
+        entities: [AdminUser, Request, Customer, Devices],
+        // synchronize: true,
       };
 
 // const jwtConfig = JwtModule.register({
