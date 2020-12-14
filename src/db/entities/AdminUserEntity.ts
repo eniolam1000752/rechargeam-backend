@@ -49,6 +49,6 @@ export class AdminUser {
   // @UpdateDateColumn()
   // updateAt: Date;
 
-  // @CreateDateColumn()
-  // creatdAt: Date;
+  @CreateDateColumn({ nullable: false, type: 'date' })
+  creatdAt: Date;
 }
