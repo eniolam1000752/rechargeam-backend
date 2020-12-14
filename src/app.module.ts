@@ -41,8 +41,8 @@ const dbConfig: TypeOrmModuleOptions =
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
         entities: [AdminUser, Request, Customer, Devices],
+        synchronize: true,
         autoLoadEntities: true,
-        // synchronize: true,
       };
 
 // const jwtConfig = JwtModule.register({
