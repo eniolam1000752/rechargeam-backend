@@ -49,6 +49,13 @@ export class AdminUser {
   // @UpdateDateColumn()
   // updateDate: Date;
 
-  @CreateDateColumn({ type: 'timestamp', nullable: true, default: null })
-  created_at: Date;
+  @Column({
+    type: 'timestamp',
+    nullable: true,
+    default: null,
+  })
+  createdAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true, default: null })
+  updatedAt: Date;
 }

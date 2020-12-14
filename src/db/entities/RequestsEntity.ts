@@ -43,4 +43,14 @@ export class Request {
 
   // @UpdateDateColumn()
   // updateDate: Date;
+
+  @Column({
+    type: 'timestamp',
+    nullable: true,
+    default: null,
+  })
+  createdAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true, default: null })
+  updatedAt: Date;
 }
