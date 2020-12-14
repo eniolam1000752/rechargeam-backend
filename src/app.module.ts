@@ -20,30 +20,17 @@ import { UserModule } from './users/users.module';
 
 config();
 
-const dbConfig: TypeOrmModuleOptions =
-  process.env.NODE_ENV !== 'production'
-    ? {
-        type: 'mysql',
-        host: process.env.DB_HOST,
-        port: Number(process.env.DB_PORT),
-        username: process.env.DB_USERNAME,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-        entities: [AdminUser, Request, Customer, Devices],
-        synchronize: true,
-        autoLoadEntities: true,
-      }
-    : {
-        type: 'mysql',
-        host: process.env.DB_HOST,
-        port: Number(process.env.DB_PORT),
-        username: process.env.DB_USERNAME,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-        entities: [AdminUser, Request, Customer, Devices],
-        synchronize: true,
-        autoLoadEntities: true,
-      };
+const dbConfig: TypeOrmModuleOptions = {
+  type: 'mysql',
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  entities: [AdminUser, Request, Customer, Devices],
+  synchronize: true,
+  autoLoadEntities: true,
+};
 
 // const jwtConfig = JwtModule.register({
 //   secret: process.env.JWT_SECRETE,
