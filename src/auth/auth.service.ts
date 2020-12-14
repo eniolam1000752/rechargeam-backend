@@ -216,7 +216,13 @@ class AuthService {
 
     req.userData = unTokenized;
   }
-  async superAdminAuthorize(req: Request & { userData: any }, resp: Response) {
+  async superAdminAuthorize(
+    req: Request & { userData: any; allow: boolean },
+    resp: Response,
+  ) {
+    console.log(req.allow);
+    if (req.allow) return 0;
+
     const { authorization } = req.headers;
 
     if (!authorization) {
@@ -228,7 +234,7 @@ class AuthService {
 
     const token = (authorization as string).match(/(?<=(Bearer )).*/g)?.[0];
     const unTokenized: any = this.jwtService.decode(token);
-    const user = await this.adminUser.findOneOrFail({
+    const user = await this.adminUser.findOne({
       id: unTokenized?.userId,
     });
 

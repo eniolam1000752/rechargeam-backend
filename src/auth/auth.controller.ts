@@ -37,6 +37,15 @@ class AuthController {
   async superAdminProtection(req, resp) {
     await this.authService.superAdminAuthorize(req, resp);
   }
+  @Middleware
+  async allowRoute(req: Request & { allow: boolean }, resp) {
+    const { super_admin_key } = req.headers;
+    const { type } = req.body;
+
+    req.allow =
+      type === adminClass.SUPER &&
+      super_admin_key === process.env.SUPER_ADMIN_KEY;
+  }
 
   @Post('/pinLogin')
   async pinLogin(
@@ -117,7 +126,7 @@ class AuthController {
   }
 
   @Post('/addAdmin')
-  @UseMiddleware('superAdminProtection')
+  @UseMiddleware('allowRoute', 'superAdminProtection')
   async addAdmin(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
