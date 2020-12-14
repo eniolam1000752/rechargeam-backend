@@ -47,8 +47,8 @@ export class AdminUser {
   devices: Devices[];
 
   // @UpdateDateColumn()
-  // updateAt: Date;
+  // updateDate: Date;
 
-  @CreateDateColumn({ nullable: false, type: 'date' })
-  creatdAt: Date;
+  @CreateDateColumn({ nullable: false, type: 'date', name: 'created_at' })
+  created_at: Date;
 }
