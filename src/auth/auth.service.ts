@@ -204,7 +204,7 @@ class AuthService {
       );
     }
 
-    const token = (authorization as string).match(/(?<=(Bearer )).*/g)?.[0];
+    const token = (authorization as string).match(/(?<=([b|B]earer )).*/g)?.[0];
     const unTokenized: any = this.jwtService.decode(token);
     const user = await this.adminUser.findOneOrFail({
       id: unTokenized.userId,
@@ -232,7 +232,7 @@ class AuthService {
       );
     }
 
-    const token = (authorization as string).match(/(?<=(Bearer )).*/g)?.[0];
+    const token = (authorization as string).match(/(?<=([b|B]earer )).*/g)?.[0];
     const unTokenized: any = this.jwtService.decode(token);
     const user = await this.adminUser.findOne({
       id: unTokenized?.userId,
