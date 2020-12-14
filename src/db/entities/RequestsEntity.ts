@@ -38,9 +38,9 @@ export class Request {
   @Column({ type: 'int', default: 0 })
   amount: number;
 
-  @CreateDateColumn()
-  createDate: Date;
+  // @CreateDateColumn()
+  // createDate: Date;
 
-  @UpdateDateColumn()
-  updateDate: Date;
+  // @UpdateDateColumn()
+  // updateDate: Date;
 }

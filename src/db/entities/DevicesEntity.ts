@@ -27,12 +27,12 @@ export class Devices {
   @Column()
   isActive: boolean;
 
-  @CreateDateColumn()
-  createDate: Date;
+  // @CreateDateColumn()
+  // createDate: Date;
 
   @ManyToOne(() => AdminUser, (adminUser) => adminUser.devices)
   user: AdminUser;
 
-  @UpdateDateColumn()
-  updateDate: Date;
+  // @UpdateDateColumn()
+  // updateDate: Date;
 }

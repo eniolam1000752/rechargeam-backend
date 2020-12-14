@@ -46,9 +46,9 @@ export class AdminUser {
   @JoinColumn()
   devices: Devices[];
 
-  @UpdateDateColumn()
-  updateAt: Date;
+  // @UpdateDateColumn()
+  // updateAt: Date;
 
-  @CreateDateColumn()
-  creatdAt: Date;
+  // @CreateDateColumn()
+  // creatdAt: Date;
 }

@@ -44,9 +44,9 @@ export class Customer {
   @JoinColumn()
   requests: Request[];
 
-  @CreateDateColumn()
-  createDate: Date;
+  // @CreateDateColumn()
+  // createDate: Date;
 
-  @UpdateDateColumn()
-  updateDate: Date;
+  // @UpdateDateColumn()
+  // updateDate: Date;
 }
