@@ -10,6 +10,6 @@ async function bootstrap() {
   app.useLogger(app.get(appLogger));
   (global as typeof global & { app: any }).app = app;
 
-  await app.listen(process.env.PORT || 3500);
+  await app.listen(process.env.PORT || 9000);
 }
 bootstrap();
