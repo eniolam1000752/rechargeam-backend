@@ -38,12 +38,12 @@ class AuthService {
 
   async login(pin, deviceId, username) {
     // const hPin = await bcrypt.hash(pin, this.saltOrRounds);
-    const user = await this.adminUser.findOneOrFail({ name: username });
+    const user = await this.adminUser.findOneOrFail({
+      name: username?.toLowerCase(),
+    });
     const device = await this.device.findOneOrFail({ deviceId });
 
     const isValid = await bcrypt.compare(pin, user.pin);
-
-    console.log(isValid);
 
     if (!isValid) {
       throw new BadRequestException('Invalid username or pin');

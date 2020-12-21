@@ -11,6 +11,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Devices } from './DevicesEntity';
+import { Setting } from './SettingsEntity';
+import { SimCard } from './SimcardsEntity';
 
 export enum adminClass {
   SUPER = 'SUPER',
@@ -46,8 +48,13 @@ export class AdminUser {
   @JoinColumn()
   devices: Devices[];
 
-  // @UpdateDateColumn()
-  // updateDate: Date;
+  @OneToMany(() => Setting, (setting) => setting.user)
+  @JoinColumn()
+  setting: Array<Setting>;
+
+  @OneToMany(() => SimCard, (simCard) => simCard.user)
+  @JoinColumn()
+  simCards: SimCard;
 
   @Column({
     type: 'timestamp',

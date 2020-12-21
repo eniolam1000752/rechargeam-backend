@@ -17,6 +17,9 @@ import { Request } from './db/entities/RequestsEntity';
 import { Customer } from './db/entities/CustomerEntity';
 import { Devices } from './db/entities/DevicesEntity';
 import { UserModule } from './users/users.module';
+import { Setting } from './db/entities/SettingsEntity';
+import { SimCard } from './db/entities/SimcardsEntity';
+import { UssdSchema } from './db/entities/UssdSchemaEntity';
 
 config();
 
@@ -27,7 +30,15 @@ const dbConfig: TypeOrmModuleOptions = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  entities: [AdminUser, Request, Customer, Devices],
+  entities: [
+    AdminUser,
+    Request,
+    Customer,
+    Devices,
+    Setting,
+    SimCard,
+    UssdSchema,
+  ],
   synchronize: true,
   autoLoadEntities: true,
 };

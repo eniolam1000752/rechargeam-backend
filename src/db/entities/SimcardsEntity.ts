@@ -4,46 +4,53 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { AdminUser } from './AdminUserEntity';
+import { Request } from './RequestsEntity';
 import { Setting } from './SettingsEntity';
 
+enum Status {
+  PENDING = 'PENDING',
+  SUCCESS = 'SUCCESS',
+  FAILED = 'FAILED',
+}
+
+enum RequestType {
+  DATA = 'DATA',
+  AIRTIME = 'AIRTIME',
+}
 @Entity()
-export class Devices {
+export class SimCard {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  deviceModel: string;
+  operatorName: string;
 
   @Column()
-  deviceId: string;
+  slotIndex: number;
 
   @Column()
-  pushToken: string;
+  subscriptionId: number;
 
-  @Column()
-  isActive: boolean;
-
-  @OneToOne(() => Setting, (setting) => setting.device)
+  @OneToOne(() => Setting, (setting) => setting.dataSim)
   @JoinColumn()
   setting: Setting;
 
-  @ManyToOne(() => AdminUser, (adminUser) => adminUser.devices)
+  @ManyToOne(() => AdminUser, (adminUser) => adminUser.simCards)
+  @JoinColumn()
   user: AdminUser;
-
-  // @UpdateDateColumn()
-  // updateDate: Date;
 
   @Column({
     type: 'timestamp',
     nullable: true,
     default: null,
   })
-  createdAt: Date;
+  createdAt: Date; 
 
   @Column({ type: 'timestamp', nullable: true, default: null })
   updatedAt: Date;

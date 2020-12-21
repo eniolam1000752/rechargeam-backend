@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Header,
@@ -53,7 +54,8 @@ class AuthController {
     @Body() body: PinLoginRequest,
     @Res({ passthrough: true }) resp: Response,
   ) {
-    const { pin, deviceId, username } = body;
+    let { pin, deviceId, username } = body;
+    username = username?.toLowerCase();
 
     if (!pin || (pin || '').toString().length === 0) {
       throw new NotAcceptableException(
@@ -92,9 +94,7 @@ class AuthController {
     });
 
     if (loggedInAdmin && (loggedInAdmin || {}).name !== username) {
-      throw new InternalServerErrorException(
-        'This device is currently logged in ',
-      );
+      throw new BadRequestException('Invalid username or password ');
     }
 
     try {

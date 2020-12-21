@@ -11,7 +11,7 @@ import {
   SetMetadata,
   UseGuards,
 } from '@nestjs/common';
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, response, Response } from 'express';
 import { UserService } from './users.service';
 import 'reflect-metadata';
 import { Middleware, UseMiddleware } from 'src/lib/decorators/middleware';
@@ -55,7 +55,7 @@ class UserController {
         delete item.pin;
         delete item.token;
         return item;
-      }),
+      }),2
     });
     // await this.userService.testing(req, resp);
   }
@@ -65,6 +65,15 @@ class UserController {
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
   ) {}
+
+  @UseMiddleware('protection')
+  @Post('/getSettings')
+  getSettings(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+
+  }
 }
 
 export { UserController };
