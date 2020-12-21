@@ -74,6 +74,15 @@ class UserController {
   ) {
 
   }
+
+  @UseMiddleware('protection')
+  @Post('/saveSettings')
+  saveSettings(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+
+  }
 }
 
 export { UserController };
