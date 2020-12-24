@@ -11,32 +11,21 @@ import {
 } from 'typeorm';
 import { AdminUser } from './AdminUserEntity';
 import { Devices } from './DevicesEntity';
-import { Request } from './RequestsEntity';
-import { SimCard } from './SimcardsEntity';
 import { UssdSchema } from './UssdSchemaEntity';
 
-enum Status {
-  PENDING = 'PENDING',
-  SUCCESS = 'SUCCESS',
-  FAILED = 'FAILED',
-}
-
-enum RequestType {
-  DATA = 'DATA',
-  AIRTIME = 'AIRTIME',
+enum Processors {
+  MTN = 'MTN',
+  GLO = 'GLO',
+  MOBILE = '9MOBILE',
+  AIRTEL = 'AIRTEL',
 }
 @Entity()
 export class Setting {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => SimCard, (simCard) => simCard.setting)
-  @JoinColumn()
-  airtimeSim: SimCard;
-
-  @OneToOne(() => SimCard, (simCard) => simCard.setting)
-  @JoinColumn()
-  dataSim: SimCard;
+  @Column()
+  processors: string;
 
   @ManyToOne(() => AdminUser, (adminUser) => adminUser.setting)
   @JoinColumn()
@@ -46,8 +35,10 @@ export class Setting {
   @JoinColumn()
   device: Devices;
 
-  @OneToMany(() => UssdSchema, (ussdSchema) => ussdSchema.setting)
-  schema: UssdSchema;
+  @OneToMany(() => UssdSchema, (ussdSchema) => ussdSchema.setting, {
+    eager: true,
+  })
+  schema: UssdSchema[];
 
   @Column({
     type: 'timestamp',

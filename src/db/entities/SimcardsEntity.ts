@@ -37,10 +37,6 @@ export class SimCard {
   @Column()
   subscriptionId: number;
 
-  @OneToOne(() => Setting, (setting) => setting.dataSim)
-  @JoinColumn()
-  setting: Setting;
-
   @ManyToOne(() => AdminUser, (adminUser) => adminUser.simCards)
   @JoinColumn()
   user: AdminUser;
@@ -50,7 +46,7 @@ export class SimCard {
     nullable: true,
     default: null,
   })
-  createdAt: Date; 
+  createdAt: Date;
 
   @Column({ type: 'timestamp', nullable: true, default: null })
   updatedAt: Date;

@@ -1,4 +1,5 @@
 import { type } from 'os';
+import { join } from 'path';
 import {
   Column,
   CreateDateColumn,
@@ -14,7 +15,7 @@ import { AdminUser } from './AdminUserEntity';
 import { Request } from './RequestsEntity';
 import { Setting } from './SettingsEntity';
 
-enum DebitOperations {
+enum DebitOperation {
   AIRTIME = 'AIRTIME',
   DATA = 'DATA',
 }
@@ -37,18 +38,19 @@ export class UssdSchema {
   id: number;
 
   @Column({ type: 'enum', enum: MobileOperators })
-  mobileOperator: MobileOperators;
+  processor: MobileOperators;
 
   @Column()
-  ussdCode: string;1
+  ussdCode: string;
 
-  @Column({ type: 'enum', enum: DebitOperations })
-  debitOperation: DebitOperations;
+  @Column({ type: 'enum', enum: DebitOperation })
+  debitOperation: DebitOperation;
 
   @Column({ type: 'enum', enum: USSDSchemaAction })
   type: USSDSchemaAction;
 
   @ManyToOne(() => Setting, (setting) => setting.schema)
+  @JoinColumn()
   setting: Setting;
 
   @Column({

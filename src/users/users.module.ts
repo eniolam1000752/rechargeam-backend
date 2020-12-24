@@ -12,6 +12,8 @@ import { config } from 'dotenv';
 import { AuthService } from 'src/auth/auth.service';
 import { AuthModule } from 'src/auth/auth.module';
 import { AuthController } from 'src/auth/auth.controller';
+import { Setting } from 'src/db/entities/SettingsEntity';
+import { UssdSchema } from 'src/db/entities/UssdSchemaEntity';
 
 config();
 
@@ -24,7 +26,7 @@ const jwtConfig = JwtModule.register({
   imports: [
     AuthModule,
     jwtConfig,
-    // TypeOrmModule.forFeature([AdminUser, Devices]),
+    TypeOrmModule.forFeature([AdminUser, Devices, Setting, UssdSchema]),
   ],
   // exports: [],
   controllers: [AuthController, UserController],

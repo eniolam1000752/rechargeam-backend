@@ -44,15 +44,15 @@ export class AdminUser {
   @Column({ type: 'enum', enum: adminClass })
   type: adminClass;
 
-  @OneToMany(() => Devices, (device) => device.user)
+  @OneToMany(() => Devices, (device) => device.user, { eager: true })
   @JoinColumn()
   devices: Devices[];
 
-  @OneToMany(() => Setting, (setting) => setting.user)
+  @OneToMany(() => Setting, (setting) => setting.user, { eager: true })
   @JoinColumn()
   setting: Array<Setting>;
 
-  @OneToMany(() => SimCard, (simCard) => simCard.user)
+  @OneToMany(() => SimCard, (simCard) => simCard.user, { eager: true })
   @JoinColumn()
   simCards: SimCard;
 

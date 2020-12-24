@@ -198,7 +198,7 @@ class AuthService {
     const { authorization } = req.headers;
 
     if (!authorization) {
-      throw new InternalServerErrorException(
+      throw new UnauthorizedException(
         'Unauthorized request',
         'This is an unauthorized request',
       );
@@ -206,16 +206,30 @@ class AuthService {
 
     const token = (authorization as string).match(/(?<=([b|B]earer )).*/g)?.[0];
     const unTokenized: any = this.jwtService.decode(token);
-    const user = await this.adminUser.findOneOrFail({
-      id: unTokenized.userId,
-    });
+    let user = {} as AdminUser;
+
+    try {
+      user = await this.adminUser.findOneOrFail({
+        id: unTokenized.userId,
+      });
+    } catch (exp) {
+      if (exp.name === 'EntityNotFound') {
+        throw new UnauthorizedException(
+          'Unauthorized request',
+          'This is an unauthorized request',
+        );
+      } else {
+        throw new InternalServerErrorException('Internal server error', exp);
+      }
+    }
 
     if (token !== user.token) {
-      throw new InternalServerErrorException('Session Timeout');
+      throw new UnauthorizedException('Session Timeout');
     }
 
     req.userData = unTokenized;
   }
+
   async superAdminAuthorize(
     req: Request & { userData: any; allow: boolean },
     resp: Response,

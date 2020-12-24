@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -9,6 +10,7 @@ import {
   Req,
   Res,
   SetMetadata,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { NextFunction, Request, response, Response } from 'express';
@@ -18,8 +20,10 @@ import { Middleware, UseMiddleware } from 'src/lib/decorators/middleware';
 import { sendMail } from '../lib/mailer';
 import { AuthService } from 'src/auth/auth.service';
 import { adminClass } from 'src/db/entities/AdminUserEntity';
+import { getSettingsReq, saveSettingsReq } from './users.dto';
+import { IUntokenized } from 'src/lib/types/global';
 
-@Controller('/api')
+@Controller('/api/user')
 // @UseGuards(Authorize)
 class UserController {
   private readonly emailRegex: RegExp;
@@ -30,7 +34,7 @@ class UserController {
   ) {}
 
   @Middleware
-  async protection(req, resp) {
+  async adminProtection(req, resp) {
     await this.authService.authorize(req, resp);
   }
 
@@ -61,24 +65,93 @@ class UserController {
   }
 
   @Post('/removeAdmin')
+  @UseMiddleware('superAdminProtection')
   removeAdmin(
     @Req() req: Request,
     @Res({ passthrough: true }) resp: Response,
   ) {}
 
-  @UseMiddleware('protection')
   @Post('/getSettings')
-  getSettings(
-    @Req() req: Request,
+  @UseMiddleware('adminProtection')
+  async getSettings(
+    @Req()
+    req: Request<null, null, getSettingsReq> & { userData: IUntokenized },
     @Res({ passthrough: true }) resp: Response,
-  ) {}
+  ) {
+    const { type } = req.body;
+    const { userId } = req.userData;
+    const user = await this.userService.getUserAt({ id: userId });
 
-  @UseMiddleware('protection')
+    if (!user) throw new UnauthorizedException('Session time out');
+
+    const { settings } = await this.userService.getSettings(user, type);
+    resp.json({ settings, code: 0, description: 'operation successful' });
+  }
+
   @Post('/saveSettings')
-  saveSettings(
-    @Req() req: Request,
+  @UseMiddleware('adminProtection')
+  async saveSettings(
+    @Req()
+    req: Request<null, null, saveSettingsReq> & { userData: IUntokenized },
     @Res({ passthrough: true }) resp: Response,
-  ) {}
+  ) {
+    const { processors, ussdSchemas } = req.body;
+    if (!processors && !ussdSchemas) {
+      throw new BadRequestException(
+        'processors and ussdSchemas field cannot be empty',
+      );
+    }
+    if (ussdSchemas && !ussdSchemas.processor) {
+      throw new BadRequestException(
+        'A USSD schema cannot be created without a processor',
+      );
+    }
+    if (ussdSchemas && !ussdSchemas.debitOperation) {
+      throw new BadRequestException(
+        'A USSD schema cannot be created without a debit operation',
+      );
+    }
+    if (ussdSchemas && !ussdSchemas.ussdAction) {
+      throw new BadRequestException(
+        'A USSD schema cannot be created without a ussdAction',
+      );
+    }
+    if (ussdSchemas && !ussdSchemas.ussdCodeFormat) {
+      throw new BadRequestException(
+        'A USSD schema cannot be created without a ussdCodeFormat',
+      );
+    }
+
+    const { userId } = req.userData;
+    const user = await this.userService.getUserAt({ id: userId });
+    const setting = await this.userService.saveSettings(user, req.body);
+
+    resp.json({ code: 0, description: 'operation was successful', setting });
+  }
+
+  @Post('/editSettings')
+  @UseMiddleware('adminProtection')
+  async editSettings(
+    @Req()
+    req: Request & { userData: IUntokenized },
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+    const { processors, ussdSchemas } = req.body;
+    if (!processors && !ussdSchemas) {
+      throw new BadRequestException(
+        'processors and ussdSchemas field cannot be empty',
+      );
+    }
+
+    const { userId } = req.userData;
+    const user = await this.userService.getUserAt({ id: userId });
+    const setting = await this.userService.editSettings(user, {
+      processors,
+      ussdSchemas,
+    });
+
+    resp.json({ code: 0, description: 'operation was successful', setting });
+  }
 }
 
 export { UserController };
