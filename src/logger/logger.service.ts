@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class appLogger extends Logger {
@@ -8,4 +8,8 @@ export class appLogger extends Logger {
 }
 
 @Injectable()
-export class EmailSender {}
+export class pushNotifier {
+  constructor() {}
+
+  push() {}
+}

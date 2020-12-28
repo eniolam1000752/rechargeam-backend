@@ -65,7 +65,10 @@ class AuthService {
 
     await this.device.save({ id: device.id, user, isActive: true });
 
-    return { token, user: { name: user.name, email: user.email } };
+    return {
+      token,
+      user: { name: user.name, email: user.email, type: user.type },
+    };
   }
 
   async forgetPin(email) {

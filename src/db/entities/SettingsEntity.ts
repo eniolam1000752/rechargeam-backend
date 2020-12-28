@@ -31,7 +31,7 @@ export class Setting {
   @JoinColumn()
   user: AdminUser;
 
-  @OneToOne(() => Devices, (devices) => devices.setting)
+  @OneToOne(() => Devices, (devices) => devices.setting, { eager: true })
   @JoinColumn()
   device: Devices;
 

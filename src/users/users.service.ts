@@ -48,16 +48,26 @@ class UserService {
   async getSettings(user: AdminUser, type?: 'all' | 'ussd' | null) {
     const { activeDeviceId } = user;
     const _device = await this.device.findOne({ deviceId: activeDeviceId });
-    const settings = await this.setting.findOne({ device: _device });
+    // const settings = await this.setting.findOne({ device: _device });
+    const settingsByUser = await this.setting.find({ user });
+    const settings = settingsByUser.find(
+      (item) => item.device?.id === _device?.id,
+    );
     if (settings) {
       const outputSettings =
         type === 'all'
           ? {
               processors: settings.processors.split('|'),
-              ussdSchemas: settings.schema,
+              ussdSchemas: settingsByUser.reduce(
+                (cum, item) => cum.concat(item.schema),
+                [],
+              ),
             }
           : {
-              ussdSchemas: settings.schema,
+              ussdSchemas: settingsByUser.reduce(
+                (cum, item) => cum.concat(item.schema),
+                [],
+              ),
             };
       return { settings: outputSettings };
     } else {
@@ -112,7 +122,7 @@ class UserService {
         newSetting.user = user;
         // newSetting.schema = [...setting.schema, newSchema];
         await this.setting.save(newSetting);
-        await this.ussdSchema.save(newSchema
+        await this.ussdSchema.save(newSchema);
       } else {
         const date = new Date();
         const newSchema = new UssdSchema();
