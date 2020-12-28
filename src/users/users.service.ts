@@ -142,7 +142,7 @@ class UserService {
     }
 
     const output = await this.setting.findOne({ device });
-    delete output[device];
+    delete output['device'];
     return output;
   }
 
