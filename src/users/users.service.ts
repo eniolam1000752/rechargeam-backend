@@ -141,7 +141,9 @@ class UserService {
       }
     }
 
-    return await this.setting.findOne({ device });
+    const output = await this.setting.findOne({ device });
+    delete output[device];
+    return output;
   }
 
   async editSettings(user: AdminUser, dataToSave: saveSettingsReq) {
