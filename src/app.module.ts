@@ -43,10 +43,6 @@ const dbConfig: TypeOrmModuleOptions = {
   autoLoadEntities: true,
 };
 
-// const jwtConfig = JwtModule.register({
-//   secret: process.env.JWT_SECRETE,
-//   signOptions: { expiresIn: '604800s' },
-// });
 @Module({
   imports: [
     TypeOrmModule.forRoot(dbConfig as TypeOrmModuleOptions),
@@ -54,14 +50,10 @@ const dbConfig: TypeOrmModuleOptions = {
     RechargeRequestModule,
     UserModule,
     LoggerModule,
-    // jwtConfig,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {
   constructor() {}
-  // configure(consumer: MiddlewareConsumer) {
-  //   consumer.apply(Authorize).forRoutes(UserController);
-  // }
 }

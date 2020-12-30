@@ -4,6 +4,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NestMiddleware,
+  NotAcceptableException,
   NotFoundException,
   Req,
   Res,
@@ -80,10 +81,15 @@ class UserService {
     const { processors, ussdSchemas } = dataToSave;
     const device = await this.device.findOne({ deviceId: activeDeviceId });
     const setting = await this.setting.findOne({ device });
+    const ussdSchema = await this.ussdSchema.findOne({
+      processor: ussdSchemas.processor,
+      debitOperation: ussdSchemas.debitOperation,
+    });
 
     let settingCreatedForDevice = Boolean(setting);
 
     console.log(setting, settingCreatedForDevice);
+
     if (processors) {
       if (!settingCreatedForDevice) {
         const newSetting = new Setting();
@@ -105,6 +111,13 @@ class UserService {
     }
 
     if (ussdSchemas) {
+      if (ussdSchema) {
+        throw new NotAcceptableException(
+          null,
+          `A ussd schema already exsits for ${ussdSchemas.processor} | ${ussdSchemas.debitOperation}`,
+        );
+      }
+
       if (!settingCreatedForDevice) {
         const newSetting = new Setting();
         const date = new Date();

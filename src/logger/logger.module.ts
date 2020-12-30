@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { appLogger } from './logger.service';
+import { appLogger, PushNotifier } from './logger.service';
 
 @Module({
-  providers: [appLogger, ],
-  exports: [appLogger],
+  providers: [appLogger, PushNotifier],
+  exports: [appLogger, PushNotifier],
 })
 export class LoggerModule {}
