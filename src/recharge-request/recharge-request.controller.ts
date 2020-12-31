@@ -12,10 +12,14 @@ export class RechargeRequestController {
     @Res() resp: Response,
     @Body() body: any,
   ) {
-    const { data, token } = body;
+    const { data, token, notification } = body;
     // console.log(body);
     try {
-      const notificationResp = await this.notify.push(token, data);
+      const notificationResp = await this.notify.push(
+        token,
+        data,
+        notification,
+      );
       console.log(notificationResp);
     } catch (exp) {
       console.log('Exception => ', exp);

@@ -195,6 +195,10 @@ class UserService {
 
     return await this.setting.findOne({ device });
   }
+
+  async deleteSchema(schemaId) {
+    await this.ussdSchema.delete({ id: schemaId });
+  }
 }
 
 export { UserService };

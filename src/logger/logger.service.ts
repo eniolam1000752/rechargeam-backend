@@ -22,9 +22,14 @@ export class PushNotifier {
     this.pushNotification = this.app.messaging();
   }
 
-  async push(pushToken: string | Array<string>, data: Record<string, any>) {
+  async push(
+    pushToken: string | Array<string>,
+    data: Record<string, any>,
+    notification: Record<string, any>,
+  ) {
     const pushRequest: messaging.Message | messaging.MulticastMessage = {
       data,
+      notification,
       token: pushToken,
     } as messaging.Message | messaging.MulticastMessage;
 

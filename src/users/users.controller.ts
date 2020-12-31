@@ -152,6 +152,23 @@ class UserController {
 
     resp.json({ code: 0, description: 'operation was successful', setting });
   }
+
+  @Post('/deleteSchema')
+  @UseMiddleware('adminProtection')
+  async deleteSchema(
+    @Req()
+    req: Request & { userData: IUntokenized },
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+    const { schemaId } = req.body;
+    if (!schemaId) {
+      throw new BadRequestException('id cannot be empty');
+    }
+
+    await this.userService.deleteSchema(schemaId);
+
+    resp.json({ code: 0, description: 'operation was successful' });
+  }
 }
 
 export { UserController };
