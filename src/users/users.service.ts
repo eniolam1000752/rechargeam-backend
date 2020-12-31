@@ -1,6 +1,7 @@
 import {
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NestMiddleware,
@@ -43,7 +44,10 @@ class UserService {
   }
 
   async getSubAdmins(req: Request, resp: any) {
-    return await this.adminUser.find({ type: adminClass.SUB });
+    return await this.adminUser.find({
+      type: adminClass.SUB,
+      isRemoved: false,
+    });
   }
 
   async getSettings(user: AdminUser, type?: 'all' | 'ussd' | null) {
@@ -211,6 +215,20 @@ class UserService {
 
   async deleteSchema(schemaId) {
     await this.ussdSchema.delete({ id: schemaId });
+  }
+
+  async removeAdmin(email: string, visitingUserId: string) {
+    const user = await this.adminUser.findOne({ email });
+    if (!user) throw new NotFoundException(null, 'admin user does not exsist');
+
+    if (user.id.toString() !== visitingUserId) {
+      await this.adminUser.save({ id: user.id, isRemoved: true });
+    } else {
+      throw new ForbiddenException(
+        null,
+        'cannot disable this user as you are presently using this user to perform this action',
+      );
+    }
   }
 }
 

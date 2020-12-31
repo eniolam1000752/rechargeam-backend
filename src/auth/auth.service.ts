@@ -43,6 +43,7 @@ class AuthService {
     // const hPin = await bcrypt.hash(pin, this.saltOrRounds);
     const user = await this.adminUser.findOneOrFail({
       name: username?.toLowerCase(),
+      isRemoved: false,
     });
     const device = await this.device.findOneOrFail({ deviceId });
 
@@ -119,7 +120,7 @@ class AuthService {
     return { pin: genPin, name: user.name };
   }
 
-  logout(req) {
+  async logout(req) {
     if (req?.userData?.userId) {
       return this.adminUser.save({
         id: req.userData.userId,
@@ -219,6 +220,7 @@ class AuthService {
     try {
       user = await this.adminUser.findOneOrFail({
         id: unTokenized.userId,
+        isRemoved: false,
       });
     } catch (exp) {
       if (exp.name === 'EntityNotFound') {
@@ -258,6 +260,7 @@ class AuthService {
     const unTokenized: any = this.jwtService.decode(token);
     const user = await this.adminUser.findOne({
       id: unTokenized?.userId,
+      isRemoved: false,
     });
 
     if (!user) {

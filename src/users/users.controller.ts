@@ -51,11 +51,13 @@ class UserController {
   ) {
     const users = await this.userService.getAllAdminUser({
       type: adminClass.SUB,
+      isRemoved: false,
     });
     resp.json({
       code: 0,
       description: 'operation successful',
       users: users.map((item) => {
+        delete item.id;
         delete item.pin;
         delete item.token;
         return item;
@@ -66,10 +68,20 @@ class UserController {
 
   @Post('/removeAdmin')
   @UseMiddleware('superAdminProtection')
-  removeAdmin(
-    @Req() req: Request,
+  async removeAdmin(
+    @Req() req: Request & { userData: any },
     @Res({ passthrough: true }) resp: Response,
-  ) {}
+  ) {
+    const { email } = req.body;
+    const { id } = req.userData;
+
+    if ((email || '').length <= 0)
+      throw new NotAcceptableException(null, 'email cannot be empty');
+
+    await this.userService.removeAdmin(email, id);
+
+    return resp.json({ descriptoin: 'operation successful', code: 0 });
+  }
 
   @Post('/getSettings')
   @UseMiddleware('adminProtection')

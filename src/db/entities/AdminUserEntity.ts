@@ -36,6 +36,9 @@ export class AdminUser {
   @Column({ type: 'boolean' })
   isActive: boolean;
 
+  @Column({ type: 'boolean', default: false })
+  isRemoved: boolean;
+
   @Column()
   token: string;
 
