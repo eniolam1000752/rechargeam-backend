@@ -98,9 +98,18 @@ class AuthController {
     }
 
     try {
-      const { token } = await this.authService.login(pin, deviceId, username);
+      const { token, user } = await this.authService.login(
+        pin,
+        deviceId,
+        username,
+      );
 
-      return { token, code: 0, description: 'operation successful' };
+      return {
+        token,
+        code: 0,
+        description: 'operation successful',
+        userType: user.type,
+      };
     } catch (exp) {
       if (exp.response) throw exp;
       throw new InternalServerErrorException(
