@@ -14,7 +14,7 @@ export class RechargeRequestService {
   constructor(
     @InjectRepository(Request) private requestRepo: Repository<Request>,
     @InjectRepository(AdminUser) private adminUser: Repository<AdminUser>,
-    @InjectRepository(Devices) device: Repository<Devices>,
+    @InjectRepository(Devices) private device: Repository<Devices>,
     private readonly pushNotify: PushNotifier,
   ) {}
 

@@ -34,11 +34,19 @@ export class PushNotifier {
     } as messaging.Message | messaging.MulticastMessage;
 
     if (typeof pushToken === 'string') {
-      return await this.pushNotification.send(pushRequest as messaging.Message);
+      let resp = null;
+      resp = await this.pushNotification.send(pushRequest as messaging.Message);
+      console.log(resp);
+
+      return resp;
     } else if (typeof pushToken === 'object') {
-      return await this.pushNotification.sendMulticast(
+      let resp = null;
+      resp = await this.pushNotification.sendMulticast(
         pushRequest as messaging.MulticastMessage,
       );
+      console.log(resp);
+
+      return resp;
     }
   }
 }
