@@ -82,8 +82,8 @@ class UserService {
     const device = await this.device.findOne({ deviceId: activeDeviceId });
     const setting = await this.setting.findOne({ device });
     const ussdSchema = await this.ussdSchema.findOne({
-      processor: ussdSchemas.processor,
-      debitOperation: ussdSchemas.debitOperation,
+      processor: ussdSchemas?.processor,
+      debitOperation: ussdSchemas?.debitOperation,
     });
 
     let settingCreatedForDevice = Boolean(setting);
