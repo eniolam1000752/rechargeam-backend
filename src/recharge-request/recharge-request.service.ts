@@ -65,7 +65,7 @@ export class RechargeRequestService {
 
     await this.pushNotify.push(
       adminToProcessRequest?.aDevice?.pushToken,
-      request,
+      { data: JSON.stringify(request as any) },
       {
         body:
           'A request to process a transacton was just received and its been processed',
