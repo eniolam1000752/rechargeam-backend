@@ -63,6 +63,8 @@ export class RechargeRequestService {
       updatedAt: customer.updatedAt,
     } as Customer;
 
+    console.log(request);
+
     await this.pushNotify.push(
       adminToProcessRequest?.aDevice?.pushToken,
       { data: JSON.stringify(request as any) },
@@ -74,8 +76,23 @@ export class RechargeRequestService {
     );
 
     request.customer = customer;
+    request.admin = adminToProcessRequest;
+    request.device = adminToProcessRequest.aDevice;
     await this.requestRepo.save(request);
 
     console.log(adminToProcessRequest);
+  }
+
+  async getRequests(adminId: number) {
+    const admin = await this.adminUser.findOne({ id: adminId });
+    return await this.requestRepo.find({ admin });
+  }
+
+  async updateRequest(requestId: number, status: Status) {
+    await this.requestRepo.save({
+      id: requestId,
+      status,
+      updatedAt: new Date(),
+    });
   }
 }

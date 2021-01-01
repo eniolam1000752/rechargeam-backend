@@ -6,11 +6,14 @@ import {
   JoinColumn,
   JoinTable,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   TableForeignKey,
   UpdateDateColumn,
 } from 'typeorm';
+import { AdminUser } from './AdminUserEntity';
 import { Customer } from './CustomerEntity';
+import { Devices } from './DevicesEntity';
 
 export enum Status {
   PENDING = 'PENDING',
@@ -40,6 +43,14 @@ export class Request {
 
   @Column({ type: 'enum', enum: MobileOperators })
   processor: MobileOperators;
+
+  @ManyToOne(() => AdminUser, (adminUser) => adminUser.requests)
+  @JoinColumn()
+  admin: AdminUser;
+
+  @ManyToOne(() => Devices, (device) => device.request)
+  @JoinColumn()
+  device: Devices;
 
   @Column({
     type: 'timestamp',

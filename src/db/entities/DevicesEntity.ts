@@ -4,11 +4,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { AdminUser } from './AdminUserEntity';
+import { Request } from './RequestsEntity';
 import { Setting } from './SettingsEntity';
 
 @Entity()
@@ -36,6 +38,9 @@ export class Devices {
   @JoinColumn()
   user: AdminUser;
 
+  @OneToMany(() => Request, (request) => request.device, { eager: true })
+  @JoinColumn()
+  request: Request[];
 
   @Column({
     type: 'timestamp',

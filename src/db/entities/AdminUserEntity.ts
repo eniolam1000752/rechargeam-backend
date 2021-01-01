@@ -11,6 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Devices } from './DevicesEntity';
+import { Request } from './RequestsEntity';
 import { Setting } from './SettingsEntity';
 import { SimCard } from './SimcardsEntity';
 
@@ -59,6 +60,10 @@ export class AdminUser {
   @OneToMany(() => SimCard, (simCard) => simCard.user, { eager: true })
   @JoinColumn()
   simCards: SimCard;
+
+  @OneToMany(() => Request, (request) => request.admin, { eager: true })
+  @JoinColumn()
+  requests: Request[];
 
   @Column({
     type: 'timestamp',

@@ -29,7 +29,7 @@ const jwtConfig = JwtModule.register({
     TypeOrmModule.forFeature([AdminUser, Devices, Setting, UssdSchema]),
   ],
   // exports: [],
-  controllers: [AuthController, UserController],
+  controllers: [UserController],
   providers: [AuthService, UserService],
 })
 export class UserModule {}
