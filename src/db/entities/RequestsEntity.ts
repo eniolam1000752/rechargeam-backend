@@ -12,7 +12,7 @@ import {
 } from 'typeorm';
 import { Customer } from './CustomerEntity';
 
-enum Status {
+export enum Status {
   PENDING = 'PENDING',
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
@@ -28,7 +28,6 @@ export class Request {
 
   @Column({ type: 'enum', enum: Status, default: Status.PENDING })
   status: Status;
-
 
   @Column({ type: 'varchar', default: 0 })
   amount: string;

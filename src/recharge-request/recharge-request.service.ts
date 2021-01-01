@@ -4,7 +4,7 @@ import { AddAdminDto } from 'src/auth/auth.dto';
 import { AdminUser } from 'src/db/entities/AdminUserEntity';
 import { Customer } from 'src/db/entities/CustomerEntity';
 import { Devices } from 'src/db/entities/DevicesEntity';
-import { Request } from 'src/db/entities/RequestsEntity';
+import { Request, Status } from 'src/db/entities/RequestsEntity';
 import { DebitOperation, MobileOperators } from 'src/lib/constants';
 import { PushNotifier } from 'src/logger/logger.service';
 import { Admin, Repository } from 'typeorm';
@@ -44,18 +44,16 @@ export class RechargeRequestService {
       );
     }
 
-    const request = {
-      ...new Request(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      amount,
-      processor,
-      debitOperation,
-      phoneNumber,
-      customer,
-    } as Request;
+    const request = new Request();
 
-    this.requestRepo.save(request);
+    request.createdAt = new Date();
+    request.updatedAt = new Date();
+    request.amount = amount;
+    request.processor = processor;
+    request.debitOperation = debitOperation;
+    request.phoneNumber = phoneNumber;
+    request.customer = customer;
+    request.status = Status.SENT;
 
     delete request.customer.id;
     delete request.customer.isActive;
@@ -72,6 +70,14 @@ export class RechargeRequestService {
         title: `incomming request from ${customer.firstname} ${customer.lastname}`,
       },
     );
+
+    request.customer.id = customer.id;
+    request.customer.isActive = customer.isActive;
+    request.customer.password = customer.password;
+    request.customer.requests = customer.requests;
+    request.customer.token = customer.token;
+
+    await this.requestRepo.save(request);
 
     console.log(adminToProcessRequest);
   }
