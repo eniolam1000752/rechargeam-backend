@@ -52,14 +52,16 @@ export class RechargeRequestService {
     request.processor = processor;
     request.debitOperation = debitOperation;
     request.phoneNumber = phoneNumber;
-    request.customer = customer;
     request.status = Status.SENT;
-
-    delete request.customer.id;
-    delete request.customer.isActive;
-    delete request.customer.password;
-    delete request.customer.requests;
-    delete request.customer.token;
+    request.customer = {
+      firstname: customer.firstname,
+      lastname: customer.lastname,
+      email: customer.email,
+      phoneNumber: customer.phoneNumber,
+      profileImage: customer.profileImage,
+      createdAt: customer.createdAt,
+      updatedAt: customer.updatedAt,
+    } as Customer;
 
     await this.pushNotify.push(
       adminToProcessRequest?.aDevice?.pushToken,
@@ -71,12 +73,7 @@ export class RechargeRequestService {
       },
     );
 
-    request.customer.id = customer.id;
-    request.customer.isActive = customer.isActive;
-    request.customer.password = customer.password;
-    request.customer.requests = customer.requests;
-    request.customer.token = customer.token;
-
+    request.customer = customer;
     await this.requestRepo.save(request);
 
     console.log(adminToProcessRequest);
