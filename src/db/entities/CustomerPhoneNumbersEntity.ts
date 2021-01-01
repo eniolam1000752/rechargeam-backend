@@ -1,15 +1,16 @@
+import { MobileOperators } from 'src/lib/constants';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
-  JoinTable,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
-  TableForeignKey,
   UpdateDateColumn,
 } from 'typeorm';
 import { Customer } from './CustomerEntity';
+import { Request } from './RequestsEntity';
 
 enum Status {
   PENDING = 'PENDING',
@@ -21,22 +22,21 @@ enum RequestType {
   DATA = 'DATA',
   AIRTIME = 'AIRTIME',
 }
+
 @Entity()
-export class Request {
+export class CustomerPhoneNumbers {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Customer, (customer) => customer.requests, { eager: true })
+  @Column()
+  phoneNumber: string;
+
+  @Column({ type: 'enum', enum: MobileOperators })
+  processor: MobileOperators;
+
+  @ManyToOne(() => Customer, (cust) => cust.otherPhones)
+  @JoinColumn()
   customer: Customer;
-
-  @Column({ type: 'enum', enum: Status, default: Status.PENDING })
-  status: Status;
-
-  @Column({ type: 'enum', enum: RequestType, default: RequestType.AIRTIME })
-  type: RequestType;
-
-  @Column({ type: 'int', default: 0 })
-  amount: number;
 
   @Column({
     type: 'timestamp',

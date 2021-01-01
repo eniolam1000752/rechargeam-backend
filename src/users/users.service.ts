@@ -136,6 +136,10 @@ class UserService {
         // newSetting.schema = [...setting.schema, newSchema];
         await this.setting.save(newSetting);
         await this.ussdSchema.save(newSchema);
+        await this.device.save({
+          id: device.id,
+          setting: newSetting,
+        });
       } else {
         const date = new Date();
         const newSchema = new UssdSchema();
@@ -151,6 +155,10 @@ class UserService {
         setting.updatedAt = date;
         await this.setting.save(setting);
         await this.ussdSchema.save(newSchema);
+        await this.device.save({
+          id: device.id,
+          setting,
+        });
       }
     }
 
@@ -188,6 +196,10 @@ class UserService {
 
         await this.ussdSchema.save(ussdSchema);
         await this.setting.save(setting);
+        await this.device.save({
+          id: device.id,
+          setting,
+        });
       } catch (exp) {
         throw new NotFoundException(null, 'schema does not exsist');
       }

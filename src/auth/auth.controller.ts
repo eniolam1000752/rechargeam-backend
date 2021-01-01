@@ -13,7 +13,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { AuthService } from './auth.service';
+import { AuthService, CustomerAuthService } from './auth.service';
 import 'reflect-metadata';
 import { AddAdminDto, PinLoginRequest } from './auth.dto';
 import { sendMail } from '../lib/mailer';
@@ -181,7 +181,7 @@ class AuthController {
     } catch (exp) {
       throw new InternalServerErrorException(
         'Unable to register user as admin',
-        'Admin user already exsits',
+        exp,
       );
     }
   }
@@ -268,12 +268,110 @@ class AuthController {
       );
     }
   }
-
-  @Post('/authenticate')
-  login(@Req() req: Request, @Res({ passthrough: true }) resp: Response) {}
-
-  @Post('/register')
-  register(@Req() req: Request, @Res({ passthrough: true }) resp: Response) {}
 }
 
-export { AuthController };
+@Controller('/api/customer')
+class CustomerAuthController {
+  constructor(private readonly custAuthService: CustomerAuthService) {}
+
+  @Post('/login')
+  async login(@Req() req: Request, @Res({ passthrough: true }) resp: Response) {
+    const { email, password } = req.body;
+
+    if (!email || (email || '').toString().length === 0) {
+      throw new NotAcceptableException(null, 'Email value cannot be empty');
+    }
+    if ((password || '').toString().length === 0) {
+      throw new NotAcceptableException(null, 'password field cannot be empty');
+    }
+
+    try {
+      const { token } = await this.custAuthService.login(email, password);
+
+      return { token, code: 0, description: 'operation successful' };
+    } catch (exp) {
+      if (exp.response) throw exp;
+
+      throw new InternalServerErrorException('Error authenticating user', exp);
+    }
+  }
+
+  @Post('/register')
+  async register(
+    @Req() req: Request,
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+    const {
+      email,
+      password,
+      cpassword,
+      phoneNumber,
+      otherPhones,
+      firstname,
+      lastname,
+    } = req.body;
+
+    if (!email || (email || '').toString().length === 0) {
+      throw new NotAcceptableException(null, 'Email value cannot be empty');
+    }
+    if (!emailRegex.test(email)) {
+      throw new NotAcceptableException(null, 'Invalid email provided');
+    }
+    if ((password || '').toString().length === 0) {
+      throw new NotAcceptableException(null, 'Password field cannot be empty');
+    }
+    if (password !== cpassword) {
+      throw new NotAcceptableException(
+        null,
+        'Miss-match in password and confrim password',
+      );
+    }
+    if (
+      !(
+        /[A-Z]+/g.test(password) &&
+        /[a-z]+/g.test(password) &&
+        /[0-9]/g.test(password) &&
+        /[@|_|#|\$|%|\s|\^|&|\*\\|\(|\)\-|\+]/g.test(password)
+      ) &&
+      password.length < 8
+    ) {
+      throw new NotAcceptableException(
+        'invalid password',
+        'Invalid password provided. Password must contain At least one upperCase, lower case a digit and special character and must be eight(8) or more characters logn',
+      );
+    }
+    if (!phoneNumber || (phoneNumber || '').toString().length === 0) {
+      throw new NotAcceptableException(null, ' phone number cannot be empty');
+    }
+    if (!firstname || (firstname || '').toString().length === 0) {
+      throw new NotAcceptableException(null, ' first name cannot be empty');
+    }
+    if (!lastname || (lastname || '').toString().length === 0) {
+      throw new NotAcceptableException(null, ' last name cannot be empty');
+    }
+
+    const addAdminResp = await this.custAuthService.registerCustomer({
+      email,
+      firstname,
+      lastname,
+      otherPhones,
+      password,
+      phoneNumber,
+    });
+
+    await sendMail(
+      email,
+      'Email verification',
+      `Hi ${firstname} ${lastname}, 
+         welcome to Rechargeam verify your email by clicking on this link below`,
+    );
+
+    resp.json({
+      message:
+        'Customer has been successfuly created, verify your email by clicking on the link sent to the email address provided',
+      code: 0,
+    });
+  }
+}
+
+export { AuthController, CustomerAuthController };

@@ -28,15 +28,18 @@ export class Devices {
   @Column()
   isActive: boolean;
 
-  @OneToOne(() => Setting, (setting) => setting.device)
+  @OneToOne(() => Setting, (setting) => setting.device, { eager: true })
   @JoinColumn()
   setting: Setting;
 
   @ManyToOne(() => AdminUser, (adminUser) => adminUser.devices)
+  @JoinColumn()
   user: AdminUser;
 
-  // @UpdateDateColumn()
-  // updateDate: Date;
+  // @OneToOne(() => AdminUser, (adminUser) => adminUser.activeDevice)
+  // @JoinColumn()
+  // userTemp: AdminUser;
+
 
   @Column({
     type: 'timestamp',

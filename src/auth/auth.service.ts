@@ -3,15 +3,18 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
+  Post,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { adminClass, AdminUser } from 'src/db/entities/AdminUserEntity';
-import { Admin, Repository } from 'typeorm';
+import { Admin, In, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Devices } from 'src/db/entities/DevicesEntity';
 import { Request } from 'express';
+import { Customer } from 'src/db/entities/CustomerEntity';
+import { IRegisterPayload } from './auth.dto';
 
 @Injectable()
 class AuthService {
@@ -61,6 +64,7 @@ class AuthService {
       token,
       isActive: true,
       activeDeviceId: deviceId,
+      activeDevice: device,
     });
 
     await this.device.save({ id: device.id, user, isActive: true });
@@ -121,6 +125,7 @@ class AuthService {
         isActive: false,
         token: '',
         activeDeviceId: '',
+        activeDevice: null,
       });
     } else {
       return { code: 0 };
@@ -160,7 +165,6 @@ class AuthService {
         .toString()
         .match(/(?<=\d\.)\d+/g)[0];
       output = genPin.slice(genPin.length - 4, genPin.length);
-      // const rawPin = await bcrypt.
 
       // note this is a bad implementation but this is just temporary
       let pinExists = false;
@@ -182,8 +186,6 @@ class AuthService {
 
     const genPin = await generatePin();
 
-    // console.log(genPin);
-
     let user = new AdminUser();
     user = {
       ...user,
@@ -191,6 +193,8 @@ class AuthService {
       email,
       type: type as any,
       isActive,
+      createdAt: new Date(),
+      updatedAt: new Date(),
       pin: await bcrypt.hash(genPin, this.saltOrRounds),
     };
     await this.adminUser.save(user);
@@ -269,4 +273,121 @@ class AuthService {
   }
 }
 
-export { AuthService };
+@Injectable()
+class CustomerAuthService {
+  saltOrRounds = 10;
+
+  constructor(
+    @InjectRepository(Customer) public customer: Repository<Customer>,
+    private jwtService: JwtService,
+  ) {}
+
+  async login(email, password) {
+    const user = await this.customer.findOneOrFail({
+      email: email.toLowerCase(),
+    });
+
+    const isValid = await bcrypt.compare(password, user.password);
+
+    if (!isValid) {
+      throw new BadRequestException('Invalid email or password');
+    }
+
+    const token = this.jwtService.sign({
+      userId: user.id,
+      createdTime: new Date().getTime(),
+    });
+
+    await this.customer.save({
+      id: user.id,
+      token,
+      isActive: true,
+    });
+
+    delete user.password;
+    delete user.id;
+    delete user.requests;
+    delete user.token;
+
+    return { token, user };
+  }
+
+  async registerCustomer(data: IRegisterPayload) {
+    const cust = await this.customer.findOne({ email: data.email });
+
+    if (cust) {
+      throw new ForbiddenException(
+        null,
+        'A user with this email already exsits',
+      );
+    }
+
+    const customer = new Customer();
+    customer.email = data.email;
+    customer.firstname = data.firstname;
+    customer.lastname = data.lastname;
+    customer.phoneNumber = data.phoneNumber;
+    customer.createdAt = new Date();
+    customer.updatedAt = new Date();
+    customer.isActive = false;
+    customer.otherPhones = (data.otherPhones as any) || [];
+    customer.password = await bcrypt.hash(data.password, this.saltOrRounds);
+
+    this.customer.save(customer);
+  }
+
+  async customerAuthorize(req: Request & { customerData: any }) {
+    const { authorization } = req.headers;
+
+    if (!authorization) {
+      throw new UnauthorizedException(
+        'Unauthorized request',
+        'This is an unauthorized request',
+      );
+    }
+
+    const token = (authorization as string).match(/(?<=([b|B]earer )).*/g)?.[0];
+    const unTokenized: any = this.jwtService.decode(token);
+    let user = {} as Customer;
+
+    try {
+      this.jwtService.verify(token);
+    } catch (exp) {
+      throw new UnauthorizedException(null, 'Session timeout');
+    }
+
+    try {
+      user = await this.customer.findOneOrFail({
+        id: unTokenized.userId,
+      });
+    } catch (exp) {
+      if (exp.name === 'EntityNotFound') {
+        throw new UnauthorizedException(
+          'Unauthorized request',
+          'This is an unauthorized request',
+        );
+      } else {
+        throw new InternalServerErrorException('Internal server error', exp);
+      }
+    }
+
+    const savedUnTokenized: {
+      userId: number;
+      createdTime: number;
+    } = this.jwtService.decode(user.token) as any;
+
+    if (new Date().getTime() - savedUnTokenized.createdTime <= 3 * 60000) {
+      this.customer.save({
+        id: user.id,
+        token: this.jwtService.sign({
+          userId: user.id,
+          createdTime: new Date().getTime(),
+        }),
+      });
+    }
+
+    req.customerData = user;
+  }
+}
+
+export { AuthService, CustomerAuthService };

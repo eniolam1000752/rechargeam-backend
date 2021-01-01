@@ -1,4 +1,3 @@
-
 import {
   Column,
   CreateDateColumn,
@@ -8,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { CustomerPhoneNumbers } from './CustomerPhoneNumbersEntity';
 import { Request } from './RequestsEntity';
 
 enum Status {
@@ -34,6 +34,9 @@ export class Customer {
   @Column()
   email: string;
 
+  @Column({ type: 'varchar' })
+  password: string;
+
   @Column()
   isActive: boolean;
 
@@ -44,11 +47,18 @@ export class Customer {
   @JoinColumn()
   requests: Request[];
 
-  // @CreateDateColumn()
-  // createDate: Date;
+  @OneToMany(
+    () => CustomerPhoneNumbers,
+    (custPhoneNumbers) => custPhoneNumbers.customer,
+  )
+  @JoinColumn()
+  otherPhones: CustomerPhoneNumbers[];
 
-  // @UpdateDateColumn()
-  // updateDate: Date;
+  @Column()
+  token: string;
+
+  @Column()
+  profileImage: string;
 
   @Column({
     type: 'timestamp',

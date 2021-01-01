@@ -7,7 +7,7 @@ import {
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 // import { AuthController } from './auth/auth.controller';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule, CustomerAuthModule } from './auth/auth.module';
 import { RechargeRequestModule } from './recharge-request/recharge-request.module';
 import { LoggerModule } from './logger/logger.module';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
@@ -20,6 +20,7 @@ import { UserModule } from './users/users.module';
 import { Setting } from './db/entities/SettingsEntity';
 import { SimCard } from './db/entities/SimcardsEntity';
 import { UssdSchema } from './db/entities/UssdSchemaEntity';
+import { CustomerPhoneNumbers } from './db/entities/CustomerPhoneNumbersEntity';
 
 config();
 
@@ -38,6 +39,7 @@ const dbConfig: TypeOrmModuleOptions = {
     Setting,
     SimCard,
     UssdSchema,
+    CustomerPhoneNumbers,
   ],
   synchronize: true,
   autoLoadEntities: true,
@@ -47,6 +49,7 @@ const dbConfig: TypeOrmModuleOptions = {
   imports: [
     TypeOrmModule.forRoot(dbConfig as TypeOrmModuleOptions),
     AuthModule,
+    CustomerAuthModule,
     RechargeRequestModule,
     UserModule,
     LoggerModule,
