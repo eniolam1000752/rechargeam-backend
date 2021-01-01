@@ -55,23 +55,23 @@ export class RechargeRequestService {
       customer,
     } as Request;
 
-    // this.requestRepo.save(request);
+    this.requestRepo.save(request);
 
-    // delete request.customer.id;
-    // delete request.customer.isActive;
-    // delete request.customer.password;
-    // delete request.customer.requests;
-    // delete request.customer.token;
+    delete request.customer.id;
+    delete request.customer.isActive;
+    delete request.customer.password;
+    delete request.customer.requests;
+    delete request.customer.token;
 
-    // await this.pushNotify.push(
-    //   adminToProcessRequest?.aDevice?.pushToken,
-    //   request,
-    //   {
-    //     body:
-    //       'A request to process a transacton was just received and its been processed',
-    //     title: `incomming request from ${customer.firstname} ${customer.lastname}`,
-    //   },
-    // );
+    await this.pushNotify.push(
+      adminToProcessRequest?.aDevice?.pushToken,
+      request,
+      {
+        body:
+          'A request to process a transacton was just received and its been processed',
+        title: `incomming request from ${customer.firstname} ${customer.lastname}`,
+      },
+    );
 
     console.log(adminToProcessRequest);
   }
