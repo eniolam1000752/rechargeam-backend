@@ -36,10 +36,6 @@ export class Devices {
   @JoinColumn()
   user: AdminUser;
 
-  // @OneToOne(() => AdminUser, (adminUser) => adminUser.activeDevice)
-  // @JoinColumn()
-  // userTemp: AdminUser;
-
 
   @Column({
     type: 'timestamp',

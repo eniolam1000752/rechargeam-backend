@@ -1,3 +1,4 @@
+import { DebitOperation, MobileOperators } from 'src/lib/constants';
 import {
   Column,
   CreateDateColumn,
@@ -15,11 +16,7 @@ enum Status {
   PENDING = 'PENDING',
   SUCCESS = 'SUCCESS',
   FAILED = 'FAILED',
-}
-
-enum RequestType {
-  DATA = 'DATA',
-  AIRTIME = 'AIRTIME',
+  SENT = 'SENT',
 }
 @Entity()
 export class Request {
@@ -32,11 +29,18 @@ export class Request {
   @Column({ type: 'enum', enum: Status, default: Status.PENDING })
   status: Status;
 
-  @Column({ type: 'enum', enum: RequestType, default: RequestType.AIRTIME })
-  type: RequestType;
 
-  @Column({ type: 'int', default: 0 })
-  amount: number;
+  @Column({ type: 'varchar', default: 0 })
+  amount: string;
+
+  @Column({ type: 'varchar' })
+  phoneNumber: string;
+
+  @Column({ type: 'enum', enum: DebitOperation })
+  debitOperation: DebitOperation;
+
+  @Column({ type: 'enum', enum: MobileOperators })
+  processor: MobileOperators;
 
   @Column({
     type: 'timestamp',

@@ -41,9 +41,9 @@ export class AdminUser {
   @Column()
   activeDeviceId: string;
 
-  // @OneToOne(() => Devices, (device) => device.userTemp, { eager: true })
-  // @JoinColumn()
-  // activeDevice: Devices;
+  @OneToOne(() => Devices, (device) => device.user, { eager: true })
+  @JoinColumn()
+  aDevice: Devices;
 
   @Column({ type: 'enum', enum: adminClass })
   type: adminClass;

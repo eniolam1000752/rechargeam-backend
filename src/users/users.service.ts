@@ -49,11 +49,12 @@ class UserService {
   async getSettings(user: AdminUser, type?: 'all' | 'ussd' | null) {
     const { activeDeviceId } = user;
     const _device = await this.device.findOne({ deviceId: activeDeviceId });
-    // const settings = await this.setting.findOne({ device: _device });
     const settingsByUser = await this.setting.find({ user });
-    const settings = settingsByUser.find(
-      (item) => item.device?.id === _device?.id,
-    );
+    const settings = await this.setting.findOne({ device: _device });
+    // const settings = settingsByUser.find(
+    //   (item) => item.device?.id === _device?.id,
+    // );
+
     if (settings) {
       const outputSettings =
         type === 'all'

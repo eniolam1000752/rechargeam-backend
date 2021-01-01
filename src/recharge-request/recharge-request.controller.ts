@@ -45,9 +45,15 @@ export class RechargeRequestController {
     @Res() resp: Response,
   ) {
     const customer = req.customerData;
-    const { amount, debitOperation } = req.body;
+    const { amount, debitOperation, phoneNumber, processor } = req.body;
 
-    await this.requestService.sendRequest(customer, amount, debitOperation);
+    await this.requestService.sendRequest(
+      customer,
+      amount,
+      debitOperation,
+      phoneNumber,
+      processor,
+    );
 
     resp.json({ description: 'Operation successful', code: 0 });
   }

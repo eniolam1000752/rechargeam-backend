@@ -64,7 +64,7 @@ class AuthService {
       token,
       isActive: true,
       activeDeviceId: deviceId,
-      activeDevice: device,
+      aDevice: device,
     });
 
     await this.device.save({ id: device.id, user, isActive: true });
@@ -112,6 +112,7 @@ class AuthService {
       id: user.id,
       pin: await bcrypt.hash(genPin, this.saltOrRounds),
       activeDeviceId: '',
+      aDevice: null,
       token: '',
     });
 
@@ -125,7 +126,7 @@ class AuthService {
         isActive: false,
         token: '',
         activeDeviceId: '',
-        activeDevice: null,
+        aDevice: null,
       });
     } else {
       return { code: 0 };
