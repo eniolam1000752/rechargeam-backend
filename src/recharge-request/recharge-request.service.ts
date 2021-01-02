@@ -44,7 +44,7 @@ export class RechargeRequestService {
       );
     }
 
-    const request = new Request();
+    let request = new Request();
 
     request.createdAt = new Date();
     request.updatedAt = new Date();
@@ -53,6 +53,13 @@ export class RechargeRequestService {
     request.debitOperation = debitOperation;
     request.phoneNumber = phoneNumber;
     request.status = Status.SENT;
+
+    request.customer = customer;
+    request.admin = adminToProcessRequest;
+    request.device = adminToProcessRequest.aDevice;
+
+    request = await this.requestRepo.save(request);
+
     request.customer = {
       firstname: customer.firstname,
       lastname: customer.lastname,
@@ -63,7 +70,8 @@ export class RechargeRequestService {
       updatedAt: customer.updatedAt,
     } as Customer;
 
-    console.log(request);
+    delete request.admin;
+    delete request.device;
 
     await this.pushNotify.push(
       adminToProcessRequest?.aDevice?.pushToken,
@@ -74,11 +82,6 @@ export class RechargeRequestService {
         title: `incomming request from ${customer.firstname} ${customer.lastname}`,
       },
     );
-
-    request.customer = customer;
-    request.admin = adminToProcessRequest;
-    request.device = adminToProcessRequest.aDevice;
-    await this.requestRepo.save(request);
 
     console.log(adminToProcessRequest);
   }
