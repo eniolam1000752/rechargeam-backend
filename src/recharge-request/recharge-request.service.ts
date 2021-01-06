@@ -86,9 +86,12 @@ export class RechargeRequestService {
     console.log(adminToProcessRequest);
   }
 
-  async getRequests(adminId: number) {
+  async getRequests(adminId: number, type?: 'all' | null) {
     const admin = await this.adminUser.findOne({ id: adminId });
-    return await this.requestRepo.find({ admin });
+    const activeDevice = admin.aDevice;
+    return await this.requestRepo.find(
+      type === 'all' ? { admin } : { device: activeDevice },
+    );
   }
 
   async updateRequest(requestId: number, status: Status) {

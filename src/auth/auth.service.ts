@@ -137,7 +137,7 @@ class AuthService {
   async regDevice(deviceId, deviceModel, pushToken) {
     const device = await this.device.findOne({ deviceId });
     if (Boolean(device)) {
-      this.device.save({ id: device.id, pushToken });
+      this.device.save({ id: device.id, pushToken, updatedAt: new Date() });
       return device;
     } else {
       const device = new Devices();
@@ -145,6 +145,7 @@ class AuthService {
       device.isActive = false;
       device.pushToken = pushToken;
       device.deviceModel = deviceModel;
+      device.createdAt = device.updatedAt = new Date();
       await this.device.save(device);
       return device;
     }

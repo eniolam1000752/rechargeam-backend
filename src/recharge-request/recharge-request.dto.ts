@@ -6,3 +6,7 @@ export interface ISendRequest {
   phoneNumber: string;
   processor: MobileOperators;
 }
+
+export interface IGetReqQueryParam {
+  type?: 'all' | null;
+}

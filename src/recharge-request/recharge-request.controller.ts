@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   Post,
+  Query,
   Req,
   Res,
 } from '@nestjs/common';
@@ -13,7 +14,7 @@ import { AdminUser } from 'src/db/entities/AdminUserEntity';
 import { Status } from 'src/db/entities/RequestsEntity';
 import { Middleware, UseMiddleware } from 'src/lib/decorators/middleware';
 import { PushNotifier } from 'src/logger/logger.service';
-import { ISendRequest } from './recharge-request.dto';
+import { ISendRequest, IGetReqQueryParam } from './recharge-request.dto';
 import { RechargeRequestService } from './recharge-request.service';
 
 @Controller('api/request')
@@ -48,8 +49,10 @@ export class RechargeRequestController {
         notification,
       );
       console.log(notificationResp);
+      resp.json({ notificationResp });
     } catch (exp) {
       console.log('Exception => ', exp);
+      resp.json({ exp });
     }
   }
 
@@ -78,9 +81,11 @@ export class RechargeRequestController {
   async getRequests(
     @Req() req: Request & { userData: any },
     @Res() resp: Response,
+    @Query() query: IGetReqQueryParam,
   ) {
     const admin = req.userData;
-    const requests = await this.requestService.getRequests(admin.userId);
+    const { type } = query;
+    const requests = await this.requestService.getRequests(admin.userId, type);
 
     resp.json({ description: 'Operation successful', code: 0, requests });
   }
