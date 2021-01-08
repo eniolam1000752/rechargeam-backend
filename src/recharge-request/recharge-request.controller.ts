@@ -96,7 +96,7 @@ export class RechargeRequestController {
     @Req() req: Request & { userData: any },
     @Res() resp: Response,
   ) {
-    const { status, requestId } = req.body;
+    const { status, requestId, ref } = req.body;
 
     if (!status && !Status[status]) {
       throw new BadRequestException('status cannot be empty');
@@ -104,7 +104,7 @@ export class RechargeRequestController {
     if (!requestId) {
       throw new BadRequestException('Request id cannot be empty');
     }
-    await this.requestService.updateRequest(requestId, status);
+    await this.requestService.updateRequest(requestId, status, ref);
 
     resp.json({ description: 'Operation successful', code: 0 });
   }

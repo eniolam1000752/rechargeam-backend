@@ -38,6 +38,9 @@ export class Request {
   @Column({ type: 'varchar' })
   phoneNumber: string;
 
+  @Column({ type: 'varchar' })
+  ref: string;
+
   @Column({ type: 'enum', enum: DebitOperation })
   debitOperation: DebitOperation;
 
