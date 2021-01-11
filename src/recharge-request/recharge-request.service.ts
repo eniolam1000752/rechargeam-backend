@@ -90,7 +90,10 @@ export class RechargeRequestService {
     const admin = await this.adminUser.findOne({ id: adminId });
     const activeDevice = admin.aDevice;
     return await this.requestRepo.find(
-      type === 'all' ? { admin } : { device: activeDevice },
+      Object.assign(
+        { order: { updatedAt: 'DESC' } },
+        type === 'all' ? { admin } : { device: activeDevice },
+      ),
     );
   }
 
