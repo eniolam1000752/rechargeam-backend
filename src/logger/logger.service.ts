@@ -25,7 +25,7 @@ export class PushNotifier {
   async push(
     pushToken: string | Array<string>,
     data: Record<string, any>,
-    notification: Record<string, any>,
+    notification: messaging.AndroidNotification,
   ) {
     const pushRequest: messaging.Message | messaging.MulticastMessage = {
       data,
@@ -44,7 +44,7 @@ export class PushNotifier {
       resp = await this.pushNotification.sendMulticast(
         pushRequest as messaging.MulticastMessage,
       );
-      console.log(resp);
+      console.log(resp);]
 
       return resp;
     }
