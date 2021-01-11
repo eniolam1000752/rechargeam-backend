@@ -281,7 +281,7 @@ class AuthService {
 @Injectable()
 class CustomerAuthService {
   saltOrRounds = 10;
-  jwtExpire = 1;
+  jwtExpire = 3;
 
   constructor(
     @InjectRepository(Customer) public customer: Repository<Customer>,
