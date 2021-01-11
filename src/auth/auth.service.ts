@@ -281,6 +281,7 @@ class AuthService {
 @Injectable()
 class CustomerAuthService {
   saltOrRounds = 10;
+  jwtExpire = 1;
 
   constructor(
     @InjectRepository(Customer) public customer: Repository<Customer>,
@@ -355,11 +356,11 @@ class CustomerAuthService {
     const unTokenized: any = this.jwtService.decode(token);
     let user = {} as Customer;
 
-    try {
-      this.jwtService.verify(token);
-    } catch (exp) {
-      throw new UnauthorizedException(null, 'Session timeout');
-    }
+    // try {
+    //   this.jwtService.verify(token);
+    // } catch (exp) {
+    //   throw new UnauthorizedException(null, 'Session timeout');
+    // }
 
     try {
       user = await this.customer.findOneOrFail({
@@ -381,7 +382,10 @@ class CustomerAuthService {
       createdTime: number;
     } = this.jwtService.decode(user.token) as any;
 
-    if (new Date().getTime() - savedUnTokenized.createdTime <= 3 * 60000) {
+    if (
+      new Date().getTime() - savedUnTokenized.createdTime <=
+      this.jwtExpire * 60000
+    ) {
       this.customer.save({
         id: user.id,
         token: this.jwtService.sign({
@@ -389,6 +393,8 @@ class CustomerAuthService {
           createdTime: new Date().getTime(),
         }),
       });
+    } else {
+      throw new UnauthorizedException(null, 'Session timeout');
     }
 
     req.customerData = user;

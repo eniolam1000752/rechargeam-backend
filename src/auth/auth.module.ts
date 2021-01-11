@@ -20,7 +20,7 @@ const jwtConfig = JwtModule.register({
 
 const custJwtConfig = JwtModule.register({
   secret: process.env.JWT_SECRETE,
-  signOptions: { expiresIn: '180s' },
+  signOptions: { expiresIn: '60s' },
 });
 @Module({
   imports: [TypeOrmModule.forFeature([AdminUser, Devices]), jwtConfig],
