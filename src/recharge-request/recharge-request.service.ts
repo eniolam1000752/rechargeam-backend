@@ -96,12 +96,10 @@ export class RechargeRequestService {
       type === 'all' ? { admin } : { deviceId: activeDevice.id },
     );
 
-    return await this.requestRepo.find(
-      Object.assign(
-        { order: { updatedAt: 'DESC' } },
-        type === 'all' ? { admin } : { deviceId: activeDevice.id },
-      ),
-    );
+    return await this.requestRepo.find({
+      where: type === 'all' ? { admin } : { device: activeDevice },
+      order: { updatedAt: 'DESC' },
+    });
   }
 
   async updateRequest(requestId: number, status: Status, ref?: string) {
