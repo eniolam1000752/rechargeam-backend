@@ -78,8 +78,8 @@ export class RechargeRequestService {
       { data: JSON.stringify(request as any) },
       {
         body:
-          'A request to process a transacton was just received and its been processed',
-        title: `incomming request from ${customer.firstname} ${customer.lastname}`,
+          'A request to process a transaction was just received and its been processed',
+        title: `incoming request from ${customer.firstname} ${customer.lastname}`,
       },
     );
 
@@ -89,10 +89,11 @@ export class RechargeRequestService {
   async getRequests(adminId: number, type?: 'all' | null) {
     const admin = await this.adminUser.findOne({ id: adminId });
     const activeDevice = admin.aDevice;
+    console.log('ACTIVE DEVICE ID ====> ', activeDevice);
     return await this.requestRepo.find(
       Object.assign(
         { order: { updatedAt: 'DESC' } },
-        type === 'all' ? { admin } : { device: activeDevice },
+        type === 'all' ? { admin } : { deviceId: activeDevice.id },
       ),
     );
   }
