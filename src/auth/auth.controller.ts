@@ -88,14 +88,14 @@ class AuthController {
       );
     }
 
-    const loggedInAdmin = await this.authService.getAdminUserAt({
-      activeDeviceId: deviceId,
-      isActive: true,
-    });
+    // const loggedInAdmin = await this.authService.getAdminUserAt({
+    //   activeDeviceId: deviceId,
+    //   isActive: true,
+    // });
 
-    if (loggedInAdmin && (loggedInAdmin || {}).name !== username) {
-      throw new BadRequestException('Invalid username or password ');
-    }
+    // if (loggedInAdmin && (loggedInAdmin || {}).name !== username) {
+    //   throw new BadRequestException('Invalid username or password ');
+    // }
 
     try {
       const { token, user } = await this.authService.login(

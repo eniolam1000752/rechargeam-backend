@@ -67,7 +67,6 @@ class AuthService {
       activeDeviceId: deviceId,
       aDevice: device,
     });
-
     await this.device.save({ id: device.id, user, isActive: true });
 
     return {
@@ -192,7 +191,7 @@ class AuthService {
     let user = new AdminUser();
     user = {
       ...user,
-      name,
+      name: name?.toLowerCase(),
       email,
       type: type as any,
       isActive,

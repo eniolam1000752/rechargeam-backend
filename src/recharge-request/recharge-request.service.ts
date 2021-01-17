@@ -89,12 +89,6 @@ export class RechargeRequestService {
   async getRequests(adminId: number, type?: 'all' | null) {
     const admin = await this.adminUser.findOne({ id: adminId });
     const activeDevice = admin.aDevice;
-    console.log('ACTIVE DEVICE ID ====> ', activeDevice);
-    console.log(
-      'selector query => ',
-      type,
-      type === 'all' ? { admin } : { deviceId: activeDevice.id },
-    );
 
     return await this.requestRepo.find({
       where: type === 'all' ? { admin } : { device: activeDevice },
