@@ -21,9 +21,9 @@ import { Setting } from './db/entities/SettingsEntity';
 import { SimCard } from './db/entities/SimcardsEntity';
 import { UssdSchema } from './db/entities/UssdSchemaEntity';
 import { CustomerPhoneNumbers } from './db/entities/CustomerPhoneNumbersEntity';
-import { WalletModule } from './customer/wallet/wallet.module';
-import { LandingPageModule } from './customer/landing-page/landing-page.module';
-import { BlogModule } from './customer/blog/blog.module';
+import { WalletModule } from './Customer/wallet/wallet.module';
+import { LandingPageModule } from './Customer/landing-page/landing-page.module';
+import { BlogModule } from './Customer/blog/blog.module';
 import { DataPlans } from './db/entities/DataPlansEntity';
 import { SliderData } from './db/entities/SliderDataEntity';
 
