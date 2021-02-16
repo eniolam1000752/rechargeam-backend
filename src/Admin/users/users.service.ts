@@ -15,7 +15,7 @@ import { AdminUser } from 'src/db/entities/AdminUserEntity';
 import { Repository } from 'typeorm';
 import { NextFunction, Request } from 'express';
 import { AuthService } from 'src/auth/auth.service';
-import { adminClass } from '../db/entities/AdminUserEntity';
+import { adminClass } from '../../db/entities/AdminUserEntity';
 import { getSettingsReq, saveSettingsReq } from './users.dto';
 import { Setting } from 'src/db/entities/SettingsEntity';
 import { Devices } from 'src/db/entities/DevicesEntity';

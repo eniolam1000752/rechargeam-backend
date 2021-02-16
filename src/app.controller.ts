@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
 import { Middleware } from './lib/decorators/middleware';
-import { UserService } from './users/users.service';
+import { UserService } from './Admin/users/users.service';
 
 class LoginResponseDTO {
   username: string;

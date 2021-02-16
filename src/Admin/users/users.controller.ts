@@ -17,7 +17,7 @@ import { NextFunction, Request, response, Response } from 'express';
 import { UserService } from './users.service';
 import 'reflect-metadata';
 import { Middleware, UseMiddleware } from 'src/lib/decorators/middleware';
-import { sendMail } from '../lib/mailer';
+import { sendMail } from '../../lib/mailer';
 import { AuthService } from 'src/auth/auth.service';
 import { adminClass } from 'src/db/entities/AdminUserEntity';
 import { getSettingsReq, saveSettingsReq } from './users.dto';

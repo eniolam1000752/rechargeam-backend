@@ -8,7 +8,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 // import { AuthController } from './auth/auth.controller';
 import { AuthModule, CustomerAuthModule } from './auth/auth.module';
-import { RechargeRequestModule } from './recharge-request/recharge-request.module';
+import { RechargeRequestModule } from './Customer/recharge-request/recharge-request.module';
 import { LoggerModule } from './logger/logger.module';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { config } from 'dotenv';
@@ -16,11 +16,16 @@ import { AdminUser } from './db/entities/AdminUserEntity';
 import { Request } from './db/entities/RequestsEntity';
 import { Customer } from './db/entities/CustomerEntity';
 import { Devices } from './db/entities/DevicesEntity';
-import { UserModule } from './users/users.module';
+import { UserModule } from './Admin/users/users.module';
 import { Setting } from './db/entities/SettingsEntity';
 import { SimCard } from './db/entities/SimcardsEntity';
 import { UssdSchema } from './db/entities/UssdSchemaEntity';
 import { CustomerPhoneNumbers } from './db/entities/CustomerPhoneNumbersEntity';
+import { WalletModule } from './customer/wallet/wallet.module';
+import { LandingPageModule } from './customer/landing-page/landing-page.module';
+import { BlogModule } from './customer/blog/blog.module';
+import { DataPlans } from './db/entities/DataPlansEntity';
+import { SliderData } from './db/entities/SliderDataEntity';
 
 config();
 
@@ -40,6 +45,8 @@ const dbConfig: TypeOrmModuleOptions = {
     SimCard,
     UssdSchema,
     CustomerPhoneNumbers,
+    DataPlans,
+    SliderData,
   ],
   synchronize: true,
   autoLoadEntities: true,
@@ -53,6 +60,9 @@ const dbConfig: TypeOrmModuleOptions = {
     RechargeRequestModule,
     UserModule,
     LoggerModule,
+    WalletModule,
+    LandingPageModule,
+    BlogModule,
   ],
   controllers: [AppController],
   providers: [AppService],
