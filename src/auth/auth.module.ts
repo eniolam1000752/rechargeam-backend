@@ -10,6 +10,7 @@ import { AuthController, CustomerAuthController } from './auth.controller';
 import { AuthService, CustomerAuthService } from './auth.service';
 import { config } from 'dotenv';
 import { Customer } from 'src/db/entities/CustomerEntity';
+import { Referrals } from 'src/db/entities/Referrals';
 
 config();
 
@@ -32,7 +33,7 @@ export class AuthModule {}
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([AdminUser, Devices, Customer]),
+    TypeOrmModule.forFeature([AdminUser, Devices, Customer, Referrals]),
     custJwtConfig,
   ],
   exports: [TypeOrmModule, CustomerAuthService],

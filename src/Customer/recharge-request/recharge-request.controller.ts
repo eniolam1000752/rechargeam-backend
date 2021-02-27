@@ -11,6 +11,7 @@ import {
 import { Request, Response } from 'express';
 import { AuthService, CustomerAuthService } from 'src/auth/auth.service';
 import { AdminUser } from 'src/db/entities/AdminUserEntity';
+import { Customer } from 'src/db/entities/CustomerEntity';
 import { Status } from 'src/db/entities/RequestsEntity';
 import { Middleware, UseMiddleware } from 'src/lib/decorators/middleware';
 import { PushNotifier } from 'src/logger/logger.service';
@@ -88,6 +89,19 @@ export class RechargeRequestController {
     const requests = await this.requestService.getRequests(admin.userId, type);
 
     resp.json({ description: 'Operation successful', code: 0, requests });
+  }
+
+  @Get('customer/getTransactions')
+  @UseMiddleware('customerAuth')
+  async getTransactions(
+    @Req() req: Request & { customerData: Customer },
+    @Res() resp: Response,
+    @Query() query: IGetReqQueryParam,
+  ) {
+    const customer = req.customerData;
+    const transactions = await this.requestService.getTransacitons(customer);
+
+    resp.json({ description: 'Operation successful', code: 0, transactions });
   }
 
   @Post('admin/updateRequest')

@@ -26,6 +26,7 @@ import { LandingPageModule } from './Customer/landing-page/landing-page.module';
 import { BlogModule } from './Customer/blog/blog.module';
 import { DataPlans } from './db/entities/DataPlansEntity';
 import { SliderData } from './db/entities/SliderDataEntity';
+import { Referrals } from './db/entities/Referrals';
 
 config();
 
@@ -47,6 +48,7 @@ const dbConfig: TypeOrmModuleOptions = {
     CustomerPhoneNumbers,
     DataPlans,
     SliderData,
+    Referrals,
   ],
   synchronize: true,
   autoLoadEntities: true,

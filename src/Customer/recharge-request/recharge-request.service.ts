@@ -60,15 +60,14 @@ export class RechargeRequestService {
 
     request = await this.requestRepo.save(request);
 
-    request.customer = {
-      firstname: customer.firstname,
-      lastname: customer.lastname,
+    request.customer = new Customer({
+      username: customer.username,
       email: customer.email,
       phoneNumber: customer.phoneNumber,
       profileImage: customer.profileImage,
       createdAt: customer.createdAt,
       updatedAt: customer.updatedAt,
-    } as Customer;
+    });
 
     delete request.admin;
     delete request.device;
@@ -79,7 +78,7 @@ export class RechargeRequestService {
       {
         body:
           'A request to process a transaction was just received and its been processed',
-        title: `incoming request from ${customer.firstname} ${customer.lastname}`,
+        title: `incoming request from ${customer.username}`,
       },
     );
 
@@ -96,7 +95,13 @@ export class RechargeRequestService {
     });
   }
 
-  
+  async getTransacitons(customer: Customer) {
+    return await this.requestRepo.find({
+      where: { customer },
+      order: { createdAt: 'ASC' },
+    });
+  }
+
   async updateRequest(requestId: number, status: Status, ref?: string) {
     await this.requestRepo.save({
       id: requestId,

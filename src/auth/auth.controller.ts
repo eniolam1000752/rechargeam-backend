@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Header,
   InternalServerErrorException,
   Next,
@@ -21,6 +22,7 @@ import { config } from 'dotenv';
 import { adminClass } from 'src/db/entities/AdminUserEntity';
 import { Middleware, UseMiddleware } from 'src/lib/decorators/middleware';
 import { emailRegex } from 'src/lib/constants';
+import { Customer } from 'src/db/entities/CustomerEntity';
 
 config();
 @Controller('/api/admin')
@@ -283,6 +285,11 @@ class AuthController {
 class CustomerAuthController {
   constructor(private readonly custAuthService: CustomerAuthService) {}
 
+  @Middleware
+  async customerGuard(req, resp) {
+    await this.custAuthService.customerAuthorize(req);
+  }
+
   @Post('/login')
   async login(@Req() req: Request, @Res({ passthrough: true }) resp: Response) {
     const { email, password } = req.body;
@@ -291,7 +298,19 @@ class CustomerAuthController {
       throw new NotAcceptableException(null, 'Email value cannot be empty');
     }
     if ((password || '').toString().length === 0) {
-      throw new NotAcceptableException(null, 'password field cannot be empty');
+      throw new NotAcceptableException(null, 'Password field cannot be empty');
+    }
+    if (
+      !(
+        /[A-Z]+/g.test(password) &&
+        /[a-z]+/g.test(password) &&
+        /[0-9]/g.test(password) &&
+        /[@|_|#|\$|%|\s|\^|&|\*\\|\(|\)\-|\+]/g.test(password)
+      ) &&
+      password.length < 8
+    ) {
+      console.log('invalid password pattern provided');
+      throw new NotAcceptableException(null, 'invaid username/password');
     }
 
     try {
@@ -316,8 +335,8 @@ class CustomerAuthController {
       cpassword,
       phoneNumber,
       otherPhones,
-      firstname,
-      lastname,
+      username,
+      referalCode,
     } = req.body;
 
     if (!email || (email || '').toString().length === 0) {
@@ -352,32 +371,63 @@ class CustomerAuthController {
     if (!phoneNumber || (phoneNumber || '').toString().length === 0) {
       throw new NotAcceptableException(null, ' phone number cannot be empty');
     }
-    if (!firstname || (firstname || '').toString().length === 0) {
-      throw new NotAcceptableException(null, ' first name cannot be empty');
-    }
-    if (!lastname || (lastname || '').toString().length === 0) {
-      throw new NotAcceptableException(null, ' last name cannot be empty');
+    if (!username || (username || '').toString().length === 0) {
+      throw new NotAcceptableException(null, ' username cannot be empty');
     }
 
     const addAdminResp = await this.custAuthService.registerCustomer({
       email,
-      firstname,
-      lastname,
+      username,
       otherPhones,
       password,
       phoneNumber,
+      referalCode,
     });
 
-    await sendMail(
+    sendMail(
       email,
       'Email verification',
-      `Hi ${firstname} ${lastname}, 
+      `Hi ${username}, 
          welcome to Rechargeam verify your email by clicking on this link below`,
     );
 
     resp.json({
       message:
         'Customer has been successfuly created, verify your email by clicking on the link sent to the email address provided',
+      code: 0,
+    });
+  }
+
+  @Get('getUser')
+  @UseMiddleware('customerGuard')
+  async getUser(
+    @Req() req: Request & { customerData: Customer },
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+    let customer = req.customerData;
+    customer = await this.custAuthService.getCustomerData(customer);
+
+    console.log(customer);
+    resp.json({
+      customer,
+      description: 'operation successful',
+      code: 0,
+    });
+  }
+
+  @Get('updateUser')
+  @UseMiddleware('customerGuard')
+  async updateUser(
+    @Req() req: Request & { customerData: Customer },
+    @Res({ passthrough: true }) resp: Response,
+  ) {
+    let customer = req.customerData;
+    customer = await this.custAuthService.getCustomerData(customer);
+
+    console.log(customer);
+    resp.json({
+      customer,
+      description: 'operation successful',
       code: 0,
     });
   }

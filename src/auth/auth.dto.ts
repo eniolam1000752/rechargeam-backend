@@ -19,6 +19,6 @@ export interface IRegisterPayload {
   password: string;
   phoneNumber: string;
   otherPhones?: Array<{ phoneNumber: string; processor: MobileOperators }>;
-  firstname: string;
-  lastname: string;
+  username: string;
+  referalCode: string;
 }

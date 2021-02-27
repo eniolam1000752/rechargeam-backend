@@ -3,6 +3,8 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
+  NotAcceptableException,
+  NotFoundException,
   Post,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -15,6 +17,7 @@ import { Devices } from 'src/db/entities/DevicesEntity';
 import { Request } from 'express';
 import { Customer } from 'src/db/entities/CustomerEntity';
 import { IRegisterPayload } from './auth.dto';
+import { Referrals } from 'src/db/entities/Referrals';
 
 @Injectable()
 class AuthService {
@@ -284,6 +287,7 @@ class CustomerAuthService {
 
   constructor(
     @InjectRepository(Customer) public customer: Repository<Customer>,
+    @InjectRepository(Referrals) public referralRepo: Repository<Referrals>,
     private jwtService: JwtService,
   ) {}
 
@@ -318,27 +322,85 @@ class CustomerAuthService {
   }
 
   async registerCustomer(data: IRegisterPayload) {
-    const cust = await this.customer.findOne({ email: data.email });
+    let customer = await this.customer.findOne({ email: data.email });
+    let referrer = new Customer();
 
-    if (cust) {
+    if (customer) {
       throw new ForbiddenException(
         null,
         'A user with this email already exsits',
       );
     }
 
-    const customer = new Customer();
+    const genReferalCode = `${data.username}-${Math.round(
+      100000 * Math.random(),
+    )}`;
+
+    customer = new Customer();
+    // ${process.env.FRONT_END_BASE_URL}signUP/
+
     customer.email = data.email;
-    customer.firstname = data.firstname;
-    customer.lastname = data.lastname;
+    customer.username = data.username;
     customer.phoneNumber = data.phoneNumber;
     customer.createdAt = new Date();
     customer.updatedAt = new Date();
     customer.isActive = false;
     customer.otherPhones = (data.otherPhones as any) || [];
     customer.password = await bcrypt.hash(data.password, this.saltOrRounds);
+    customer.referralUrl = genReferalCode;
 
-    this.customer.save(customer);
+    try {
+      if (data.referalCode) {
+        referrer = await this.customer.findOneOrFail({
+          where: { referralUrl: data.referalCode },
+          relations: [
+            'otherPhones',
+            'referrees',
+            'referral',
+            'referral.customer',
+          ],
+        });
+      }
+    } catch (exp) {
+      console.log(exp);
+      throw new NotAcceptableException(null, 'invalid referral code provided');
+    }
+
+    try {
+      customer = await this.customer.save(customer);
+    } catch (exp) {
+      console.log(exp);
+      if (exp.errno === 1062) {
+        throw new NotAcceptableException(
+          null,
+          'A customer with this username already exists',
+        );
+      } else {
+        throw new InternalServerErrorException(
+          null,
+          'Request processing error',
+        );
+      }
+    }
+
+    if (data.referalCode) {
+      try {
+        const referral = await this.referralRepo.save({
+          customer,
+          referrer,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+
+        await this.customer.save([
+          { id: referrer.id, referrees: [...referrer.referrees, referral] },
+          { id: customer.id, referral },
+        ]);
+      } catch (exp) {
+        console.log(exp);
+        throw new NotFoundException(null, 'invalid referral code provided');
+      }
+    }
   }
 
   async customerAuthorize(req: Request & { customerData: any }) {
@@ -354,12 +416,6 @@ class CustomerAuthService {
     const token = (authorization as string).match(/(?<=([b|B]earer )).*/g)?.[0];
     const unTokenized: any = this.jwtService.decode(token);
     let user = {} as Customer;
-
-    // try {
-    //   this.jwtService.verify(token);
-    // } catch (exp) {
-    //   throw new UnauthorizedException(null, 'Session timeout');
-    // }
 
     try {
       user = await this.customer.findOneOrFail({
@@ -397,6 +453,29 @@ class CustomerAuthService {
     }
 
     req.customerData = user;
+  }
+
+  async getCustomerData(customer: Customer) {
+    try {
+      const result = await this.customer.findOne({
+        where: { id: customer.id },
+        relations: [
+          'otherPhones',
+          'referrees',
+          'referral',
+          'referral.referrer',
+        ],
+      });
+      delete result.password;
+      delete result.token;
+      delete result.id;
+      result.referralUrl = `${process.env.FRONT_END_BASE_URL}signUp/?referral=${result.referralUrl}`;
+
+      return result;
+    } catch (exp) {
+      console.log(exp);
+      throw new InternalServerErrorException(null, 'Request processing erro');
+    }
   }
 }
 

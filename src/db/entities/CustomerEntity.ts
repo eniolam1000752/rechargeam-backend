@@ -3,11 +3,14 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { CustomerPhoneNumbers } from './CustomerPhoneNumbersEntity';
+import { Referrals } from './Referrals';
 import { Request } from './RequestsEntity';
 
 enum Status {
@@ -22,51 +25,66 @@ enum RequestType {
 }
 @Entity()
 export class Customer {
+  constructor(data?: Customer) {
+    if (typeof data === 'object') {
+      Object.keys(data).forEach((index) => {
+        this[index] = data[index];
+      });
+    }
+  }
+
   @PrimaryGeneratedColumn()
-  id: number;
+  id?: number;
+
+  @Column({ unique: true })
+  username?: string;
 
   @Column()
-  firstname: string;
-
-  @Column()
-  lastname: string;
-
-  @Column()
-  email: string;
+  email?: string;
 
   @Column({ type: 'varchar' })
-  password: string;
+  password?: string;
 
   @Column()
-  isActive: boolean;
+  isActive?: boolean;
 
   @Column()
-  phoneNumber: string;
+  phoneNumber?: string;
 
   @OneToMany(() => Request, (request) => request.customer)
   @JoinColumn()
-  requests: Request[];
+  requests?: Request[];
 
   @OneToMany(
     () => CustomerPhoneNumbers,
     (custPhoneNumbers) => custPhoneNumbers.customer,
   )
   @JoinColumn()
-  otherPhones: CustomerPhoneNumbers[];
+  otherPhones?: CustomerPhoneNumbers[];
 
   @Column()
-  token: string;
+  token?: string;
 
   @Column()
-  profileImage: string;
+  referralUrl?: string;
+
+  @OneToOne(() => Referrals, (r) => r.customer)
+  referral?: Referrals;
+
+  @OneToMany(() => Referrals, (r) => r.referrer)
+  @JoinColumn()
+  referrees?: Referrals[];
+
+  @Column()
+  profileImage?: string;
 
   @Column({
     type: 'timestamp',
     nullable: true,
     default: null,
   })
-  createdAt: Date;
+  createdAt?: Date;
 
   @Column({ type: 'timestamp', nullable: true, default: null })
-  updatedAt: Date;
+  updatedAt?: Date;
 }
