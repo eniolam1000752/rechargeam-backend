@@ -101,7 +101,11 @@ export class RechargeRequestController {
     const customer = req.customerData;
     const transactions = await this.requestService.getTransacitons(customer);
 
-    resp.json({ description: 'Operation successful', code: 0, transactions });
+    resp.json({
+      description: 'Operation successful',
+      code: 0,
+      requests: transactions,
+    });
   }
 
   @Post('admin/updateRequest')
