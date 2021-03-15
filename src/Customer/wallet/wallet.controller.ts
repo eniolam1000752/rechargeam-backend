@@ -14,23 +14,23 @@ import { CreateWalletDto } from './dto/create-wallet.dto';
 export class WalletController {
   constructor(private readonly walletService: WalletService) {}
 
-  @Post()
-  create(@Body() createWalletDto: CreateWalletDto) {
-    return this.walletService.create(createWalletDto);
-  }
+  // @Post()
+  // create(@Body() createWalletDto: CreateWalletDto) {
+  //   return this.walletService.create(createWalletDto);
+  // }
 
-  @Get()
-  findAll() {
-    return this.walletService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.walletService.findAll();
+  // }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.walletService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.walletService.findOne(+id);
+  // }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.walletService.remove(+id);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.walletService.remove(+id);
+  // }
 }

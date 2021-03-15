@@ -11,6 +11,7 @@ import { AuthService, CustomerAuthService } from './auth.service';
 import { config } from 'dotenv';
 import { Customer } from 'src/db/entities/CustomerEntity';
 import { Referrals } from 'src/db/entities/Referrals';
+import { Wallet } from 'src/db/entities/Wallet';
 
 config();
 
@@ -33,7 +34,7 @@ export class AuthModule {}
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([AdminUser, Devices, Customer, Referrals]),
+    TypeOrmModule.forFeature([AdminUser, Devices, Customer, Referrals, Wallet]),
     custJwtConfig,
   ],
   exports: [TypeOrmModule, CustomerAuthService],

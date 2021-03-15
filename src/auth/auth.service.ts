@@ -18,6 +18,7 @@ import { Request } from 'express';
 import { Customer } from 'src/db/entities/CustomerEntity';
 import { IRegisterPayload } from './auth.dto';
 import { Referrals } from 'src/db/entities/Referrals';
+import { Wallet } from 'src/db/entities/Wallet';
 
 @Injectable()
 class AuthService {
@@ -288,6 +289,7 @@ class CustomerAuthService {
   constructor(
     @InjectRepository(Customer) public customer: Repository<Customer>,
     @InjectRepository(Referrals) public referralRepo: Repository<Referrals>,
+    @InjectRepository(Wallet) public walletRepo: Repository<Wallet>,
     private jwtService: JwtService,
   ) {}
 
@@ -349,6 +351,11 @@ class CustomerAuthService {
     customer.password = await bcrypt.hash(data.password, this.saltOrRounds);
     customer.referralUrl = genReferalCode;
 
+    const wallet = new Wallet();
+    wallet.customer = customer;
+    wallet.createdAt = new Date();
+    wallet.updatedAt = new Date();
+
     try {
       if (data.referalCode) {
         referrer = await this.customer.findOneOrFail({
@@ -367,7 +374,8 @@ class CustomerAuthService {
     }
 
     try {
-      customer = await this.customer.save(customer);
+      customer = await this.customer.save({ customer, ...{ wallet } });
+      await this.walletRepo.save(wallet);
     } catch (exp) {
       console.log(exp);
       if (exp.errno === 1062) {
@@ -464,6 +472,7 @@ class CustomerAuthService {
           'referrees',
           'referral',
           'referral.referrer',
+          'wallet',
         ],
       });
       delete result.password;

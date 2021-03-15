@@ -12,6 +12,7 @@ import {
 import { CustomerPhoneNumbers } from './CustomerPhoneNumbersEntity';
 import { Referrals } from './Referrals';
 import { Request } from './RequestsEntity';
+import { Wallet } from './Wallet';
 
 enum Status {
   PENDING = 'PENDING',
@@ -70,6 +71,10 @@ export class Customer {
 
   @OneToOne(() => Referrals, (r) => r.customer)
   referral?: Referrals;
+
+  @OneToOne(() => Wallet, (wallet) => wallet.customer)
+  @JoinColumn()
+  wallet?: Wallet;
 
   @OneToMany(() => Referrals, (r) => r.referrer)
   @JoinColumn()
