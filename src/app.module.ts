@@ -27,6 +27,7 @@ import { BlogModule } from './Customer/blog/blog.module';
 import { DataPlans } from './db/entities/DataPlansEntity';
 import { SliderData } from './db/entities/SliderDataEntity';
 import { Referrals } from './db/entities/Referrals';
+import { Wallet } from './db/entities/Wallet';
 
 config();
 
@@ -49,6 +50,7 @@ const dbConfig: TypeOrmModuleOptions = {
     DataPlans,
     SliderData,
     Referrals,
+    Wallet,
   ],
   synchronize: true,
   autoLoadEntities: true,
@@ -65,6 +67,7 @@ const dbConfig: TypeOrmModuleOptions = {
     WalletModule,
     LandingPageModule,
     BlogModule,
+    WalletModule,
   ],
   controllers: [AppController],
   providers: [AppService],
