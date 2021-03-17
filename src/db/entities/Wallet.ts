@@ -20,21 +20,17 @@ export class Wallet {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'int', default: 0 })
+  @Column({ default: 0 })
   amount: number;
 
-  @Column({ type: 'int', default: 0 })
+  @Column({ default: 0 })
   commission: number;
 
   @OneToOne(() => Customer, (cust) => cust.wallet)
   @JoinColumn()
   customer: Customer;
 
-  @Column({
-    type: 'timestamp',
-    nullable: true,
-    default: null,
-  })
+  @Column({ type: 'timestamp', nullable: true, default: null })
   createdAt: Date;
 
   @Column({ type: 'timestamp', nullable: true, default: null })
