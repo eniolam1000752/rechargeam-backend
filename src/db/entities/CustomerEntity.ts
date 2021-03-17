@@ -85,11 +85,9 @@ export class Customer {
 
   @Column({
     type: 'timestamp',
-    nullable: true,
-    default: null,
   })
   createdAt?: Date;
 
-  @Column({ type: 'timestamp', nullable: true, default: null })
+  @Column({ type: 'timestamp' })
   updatedAt?: Date;
 }

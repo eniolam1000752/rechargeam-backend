@@ -27,6 +27,7 @@ export class Request {
   id: number;
 
   @ManyToOne(() => Customer, (customer) => customer.requests, { eager: true })
+  @JoinColumn()
   customer: Customer;
 
   @Column({ type: 'enum', enum: Status, default: Status.PENDING })
@@ -55,13 +56,9 @@ export class Request {
   @JoinColumn()
   device: Devices;
 
-  @Column({
-    type: 'timestamp',
-    nullable: true,
-    default: null,
-  })
+  @Column({ type: 'timestamp' })
   createdAt: Date;
 
-  @Column({ type: 'timestamp', nullable: true, default: null })
+  @Column({ type: 'timestamp' })
   updatedAt: Date;
 }

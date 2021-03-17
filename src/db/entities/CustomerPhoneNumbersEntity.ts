@@ -38,13 +38,9 @@ export class CustomerPhoneNumbers {
   @JoinColumn()
   customer: Customer;
 
-  @Column({
-    type: 'timestamp',
-    nullable: true,
-    default: null,
-  })
+  @Column({ type: 'timestamp' })
   createdAt: Date;
 
-  @Column({ type: 'timestamp', nullable: true, default: null })
+  @Column({ type: 'timestamp' })
   updatedAt: Date;
 }

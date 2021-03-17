@@ -41,13 +41,9 @@ export class SimCard {
   @JoinColumn()
   user: AdminUser;
 
-  @Column({
-    type: 'timestamp',
-    nullable: true,
-    default: null,
-  })
+  @Column({})
   createdAt: Date;
 
-  @Column({ type: 'timestamp', nullable: true, default: null })
+  @Column({})
   updatedAt: Date;
 }
