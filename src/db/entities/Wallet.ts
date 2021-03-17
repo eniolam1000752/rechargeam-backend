@@ -36,6 +36,6 @@ export class Wallet {
   @Column({ type: 'timestamp', nullable: true, default: null })
   updatedAt: Date;
 
-  @DeleteDateColumn()
-  deletedAt: Date;
+  // @DeleteDateColumn()
+  // deletedAt: Date;
 }

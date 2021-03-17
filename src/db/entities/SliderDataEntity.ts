@@ -14,9 +14,9 @@ export class SliderData {
   @Column()
   text: string;
 
-  @Column()
+  @Column({ type: 'timestamp', nullable: true, default: null })
   createdDate: Date;
 
-  @Column()
+  @Column({ type: 'timestamp', nullable: true, default: null })
   updatedDate: Date;
 }

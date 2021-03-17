@@ -56,9 +56,9 @@ export class Request {
   @JoinColumn()
   device: Devices;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', nullable: true, default: null })
   createdAt: Date;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', nullable: true, default: null })
   updatedAt: Date;
 }
