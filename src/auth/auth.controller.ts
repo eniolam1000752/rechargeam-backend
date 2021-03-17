@@ -313,15 +313,8 @@ class CustomerAuthController {
       throw new NotAcceptableException(null, 'invaid username/password');
     }
 
-    try {
-      const { token } = await this.custAuthService.login(email, password);
-
-      return { token, code: 0, description: 'operation successful' };
-    } catch (exp) {
-      if (exp.response) throw exp;
-
-      throw new InternalServerErrorException('Error authenticating user', exp);
-    }
+    const { token } = await this.custAuthService.login(email, password);
+    return { token, code: 0, description: 'operation successful' };
   }
 
   @Post('/register')

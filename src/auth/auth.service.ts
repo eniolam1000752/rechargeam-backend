@@ -294,14 +294,21 @@ class CustomerAuthService {
   ) {}
 
   async login(email, password) {
-    const user = await this.customer.findOneOrFail({
-      email: email.toLowerCase(),
-    });
+    let user: Customer;
+
+    try {
+      user = await this.customer.findOneOrFail({
+        email: email.toLowerCase(),
+      });
+    } catch (exp) {
+      console.log(exp);
+      throw new UnauthorizedException(null, 'Invalid email or password');
+    }
 
     const isValid = await bcrypt.compare(password, user.password);
-
     if (!isValid) {
-      throw new BadRequestException('Invalid email or password');
+      console.log('Invalid email or  password');
+      throw new UnauthorizedException('Invalid email or password');
     }
 
     const token = this.jwtService.sign({
@@ -309,18 +316,23 @@ class CustomerAuthService {
       createdTime: new Date().getTime(),
     });
 
-    await this.customer.save({
-      id: user.id,
-      token,
-      isActive: true,
-    });
+    try {
+      await this.customer.save({
+        id: user.id,
+        token,
+        isActive: true,
+      });
 
-    delete user.password;
-    delete user.id;
-    delete user.requests;
-    delete user.token;
+      delete user.password;
+      delete user.id;
+      delete user.requests;
+      delete user.token;
 
-    return { token, user };
+      return { token, user };
+    } catch (exp) {
+      console.log(exp);
+      throw new InternalServerErrorException(null, 'Request processing error');
+    }
   }
 
   async registerCustomer(data: IRegisterPayload) {
@@ -351,8 +363,7 @@ class CustomerAuthService {
     customer.password = await bcrypt.hash(data.password, this.saltOrRounds);
     customer.referralUrl = genReferalCode;
 
-    const wallet = new Wallet();
-    wallet.customer = customer;
+    let wallet = new Wallet();
     wallet.createdAt = new Date();
     wallet.updatedAt = new Date();
 
@@ -363,6 +374,7 @@ class CustomerAuthService {
           relations: [
             'otherPhones',
             'referrees',
+            'referrees.referrer',
             'referral',
             'referral.customer',
           ],
@@ -374,8 +386,12 @@ class CustomerAuthService {
     }
 
     try {
-      customer = await this.customer.save({ customer, ...{ wallet } });
-      await this.walletRepo.save(wallet);
+      console.log(customer);
+      customer = await this.customer.save(customer);
+      wallet = await this.walletRepo.save(wallet);
+
+      customer = await this.customer.save({ id: customer.id, wallet });
+      wallet = await this.walletRepo.save({ id: wallet.id, customer });
     } catch (exp) {
       console.log(exp);
       if (exp.errno === 1062) {
@@ -470,6 +486,7 @@ class CustomerAuthService {
         relations: [
           'otherPhones',
           'referrees',
+          'referrees.customer',
           'referral',
           'referral.referrer',
           'wallet',
@@ -478,7 +495,15 @@ class CustomerAuthService {
       delete result.password;
       delete result.token;
       delete result.id;
+      delete result.referral?.referrer.password;
+      delete result.referral?.referrer.token;
+
       result.referralUrl = `${process.env.FRONT_END_BASE_URL}signUp/?referral=${result.referralUrl}`;
+
+      for (let refreeIndex in result.referrees) {
+        delete result.referrees[refreeIndex]?.customer?.token;
+        delete result.referrees[refreeIndex]?.customer?.password;
+      }
 
       return result;
     } catch (exp) {
